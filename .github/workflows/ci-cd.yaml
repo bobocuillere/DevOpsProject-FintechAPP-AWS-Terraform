@@ -29,5 +29,5 @@ jobs:
 
       - name: Build, tag, and push image to Amazon ECR
         run: |
-          docker build -t ${{ secrets.ECR_REGISTRY }}/fintech-app-repo:${{ github.run_number }} ./src
+          docker build -t ${{ secrets.ECR_REGISTRY }}:${{ github.run_number }} ./src
           docker push ${{ secrets.ECR_REGISTRY }}/fintech-app-repo:${{ github.run_number }}
