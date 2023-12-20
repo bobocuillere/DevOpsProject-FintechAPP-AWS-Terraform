@@ -1,46 +1,28 @@
-name: CI/CD Pipeline
+name: CI/CD for Fintech APP
 
 on:
   push:
     branches:
       - main
-    tags:
-      - 'v*'
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v2
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-    - name: Login to Amazon ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
 
-    - name: Build, tag, and push image to Amazon ECR
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        docker build -t $ECR_REGISTRY/fintech-app-repo:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/fintech-app-repo:$IMAGE_TAG
-
-    - name: Run Unit Tests
-      run: |
-        # Add commands to run your unit tests here
-        # Example: python -m unittest discover -s tests
-
-    - name: Update Kubernetes Manifests
-      run: |
-        # Add script or commands to update Kubernetes manifests
-        # This might include setting the new Docker image in deployment.yaml
-
-    - name: Deploy to Kubernetes
-      run: |
-        # Use kubectl to apply the changes to your cluster
-        # Example: kubectl apply -f ./k8s
-
+      - name: Build, tag, and push image to Amazon ECR
+        run: |
+          docker build -t ${{ secrets.ECR_REGISTRY }}/fintech-app-repo:${{ github.run_number }} ./src
+          docker push ${{ secrets.ECR_REGISTRY }}/fintech-app-repo:${{ github.run_number }}

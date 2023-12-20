@@ -58,3 +58,4 @@ docker-compose.override.yml
 # Other files
 .DS_Store
 Thumbs.db
+lib64
