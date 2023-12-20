@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fintech-web
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: fintech-web
+  template:
+    metadata:
+      labels:
+        app: fintech-web
+    spec:
+      containers:
+      - name: fintech-web
+        image: bobocuillere/fintech:latest  # Replace with your Docker image path
+        ports:
+        - containerPort: 5000
+        env:
+          - name: FLASK_ENV
+            valueFrom:
+              configMapKeyRef:
+                name: fintech-app-config
+                key: flask_env
+          - name: SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: fintech-secret
+                key: secret_key
+          - name: DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: fintech-db-secret
+                key: username
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: fintech-db-secret
+                key: password
+          - name: DB_ENDPOINT
+            valueFrom:
+              configMapKeyRef:
+                name: fintech-db-config
+                key: db_endpoint
+          - name: DATABASE_URI
+            value: "postgresql://$(DB_USERNAME):$(DB_PASSWORD)@$(DB_ENDPOINT)/fintech" 
+

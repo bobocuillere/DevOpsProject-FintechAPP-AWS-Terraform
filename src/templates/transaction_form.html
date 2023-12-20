@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Create Transaction</h2>
+    <form method="post" action="{{ url_for('app.create_transaction', account_id=account.id) }}">
+        <div class="form-group">
+            <label for="type">Transaction Type</label>
+            <select class="form-control" name="type" id="type">
+                <option value="deposit">Deposit</option>
+                <option value="withdrawal">Withdrawal</option>
+                <!-- Add other types as needed -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="amount">Amount</label>
+            <input type="number" class="form-control" name="amount" id="amount" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+{% endblock %}

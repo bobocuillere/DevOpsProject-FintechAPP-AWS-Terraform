@@ -1,0 +1,19 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Your Accounts</h2>
+    {% if accounts %}
+        <ul class="list-group">
+            {% for account in accounts %}
+            <li class="list-group-item">
+                {{ account.account_name }} - {{ account.account_type }} - Balance: {{ account.balance }}
+                <a href="{{ url_for('app.account_detail', account_id=account.id) }}" class="btn btn-primary btn-sm">Details</a>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No accounts found.</p>
+    {% endif %}
+</div>
+{% endblock %}

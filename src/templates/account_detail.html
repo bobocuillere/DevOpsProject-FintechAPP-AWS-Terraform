@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Account Details: {{ account.account_name }}</h2>
+    <p>Type: {{ account.account_type }}</p>
+    <p>Balance: {{ account.balance }}</p>
+    <p>Created At: {{ account.created_at }}</p>
+    <!-- Add more details as needed -->
+</div>
+{% endblock %}

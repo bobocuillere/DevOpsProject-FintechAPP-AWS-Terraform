@@ -1,0 +1,13 @@
+__pycache__/*
+pyvenv.cfg
+.git/*
+.gitignore
+*.pyc
+*.pyo
+*.pyd
+bin/*
+include/*
+lib/*
+lib64/*
+migrations/*
+static/*

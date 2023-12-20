@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Transactions</h2>
+    <ul class="list-group">
+        {% for transaction in transactions %}
+        <li class="list-group-item">
+            {{ transaction.type | capitalize }} - Amount: {{ transaction.amount }} - Date: {{ transaction.timestamp }}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

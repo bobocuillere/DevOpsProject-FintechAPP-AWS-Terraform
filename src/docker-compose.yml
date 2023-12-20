@@ -1,0 +1,26 @@
+# This Docker compose is for testing locally the app without having to deploy an EKS cluster on AWS.
+# Dev Purpose only 
+version: '3.8'
+services:
+  web:
+    container_name: fintech-web
+    build: .
+    image: fintech
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_ENV=development
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: fintech-db
+      POSTGRES_USER: fintech-backend
+      POSTGRES_PASSWORD: lolll
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:

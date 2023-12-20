@@ -1,0 +1,60 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+env/
+pyvenv.cfg
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Minikube binary
+minikube-linux-amd64
+
+# Directory for virtual Python environments
+bin/
+include/
+lib/
+lib64/*
+
+# Migrations and static files
+migrations/
+static/
+
+# Git related files
+.git/
+
+# Build and compiled files
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Terraform state files and plan files
+terraform.tfstate
+terraform.tfstate.*
+terraform.tfvars
+terraform/.terraform/
+*.tfplan
+*.tfstate.backup
+
+# Ansible specific
+ansible/*.retry
+
+# Logs and databases
+*.log
+*.sqlite
+
+# Docker specific files
+docker-compose.override.yml
+*.env
+.env
+
+# Other files
+.DS_Store
+Thumbs.db
