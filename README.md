@@ -2,7 +2,7 @@
 
 ## Application Description
 
-The Fintech Cloud Project presents a mock financial technology application, designed and developped by me (Sophnel Merzier :)) to simulate a typical fintech environment. The application features a RESTful API developed using Flask, a popular Python web framework. It provides functionalities like user registration, account management, and transaction processing, all managed through an easy-to-use web interface.
+The Fintech Cloud Project presents a mock financial technology application, designed and developped by me (Sophnel Merzier :) ) to simulate a typical fintech environment. The application features a RESTful API developed using Flask, a popular Python web framework. It provides functionalities like user registration, account management, and transaction processing, all managed through an easy-to-use web interface.
 
 ### Core Features
 
