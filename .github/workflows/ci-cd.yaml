@@ -44,6 +44,7 @@ jobs:
         run: |
           eval "${{ steps.get-kubeconfig.outputs.configure_kubectl }}"
 
+
       - name: View current context
         run: kubectl config current-context
 
