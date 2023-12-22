@@ -47,7 +47,9 @@ jobs:
       - name: View current context
         run: kubectl config current-context
 
-
+      #write aws configure list new step
+      - name: Configure list
+        run: aws configure list
 
       - name: Check Pods Status Before Deployment
         run: kubectl get pods
