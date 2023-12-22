@@ -27,7 +27,16 @@ jobs:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build, tag, and push image to Amazon ECR
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          REPOSITORY: fintech-app-repo
+          IMAGE_TAG: ${{ github.sha }}
         run: |
-          docker build -t ${{ secrets.ECR_REGISTRY }}/fintech-app-repo:${{ github.run_number }} ./src
-          docker push ${{ secrets.ECR_REGISTRY }}/fintech-app-repo:${{ github.run_number }}
+          docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
+          docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
+
+      # - name: Build, tag, and push image to Amazon ECR
+      #   run: |
+      #     docker build -t ${{ secrets.ECR_REGISTRY }}/fintech-app-repo:${{ github.run_number }} ./src
+      #     docker push ${{ secrets.ECR_REGISTRY }}/fintech-app-repo:${{ github.run_number }}
