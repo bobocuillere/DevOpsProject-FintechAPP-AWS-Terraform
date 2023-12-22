@@ -30,6 +30,5 @@ jobs:
       - name: Build, tag, and push Docker image to Amazon ECR
         run: |
           docker build -t fintech-app-repo:${{ github.sha }} ./src
-          docker tag fintech-app-repo:${{ github.sha }} ${{ secrets.ECR_REGISTRY }}/fintech-app-repo:${{ github.sha }}
-          docker push ${{ secrets.ECR_REGISTRY }}/fintech-app-repo:${{ github.sha }}
-          
+          docker tag fintech-app-repo:${{ github.sha }} ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
+          docker push ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
