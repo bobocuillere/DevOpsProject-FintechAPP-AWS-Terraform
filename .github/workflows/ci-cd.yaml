@@ -44,6 +44,9 @@ jobs:
         run: |
           eval "${{ steps.get-kubeconfig.outputs.configure_kubectl }}"
 
+      - name: Check Pods Status Before Deployment
+        run: kubectl get pods
+
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
