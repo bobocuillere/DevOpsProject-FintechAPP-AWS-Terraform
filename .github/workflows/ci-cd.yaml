@@ -62,11 +62,8 @@ jobs:
         run: |
           aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
 
-      - name: Build and tag Docker image
+      - name: Build, tag, and push Docker image to Amazon ECR
         run: |
           docker build -t fintech-app-repo:${{ github.sha }} ./src
           docker tag fintech-app-repo:${{ github.sha }} ${{ secrets.ECR_REGISTRY }}/fintech-app-repo:${{ github.sha }}
-
-      - name: Push Docker image to Amazon ECR
-        run: |
           docker push ${{ secrets.ECR_REGISTRY }}/fintech-app-repo:${{ github.sha }}
