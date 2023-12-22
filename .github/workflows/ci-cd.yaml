@@ -37,11 +37,11 @@ jobs:
       - name: Retrieve Kubernetes Config
         id: get-kubeconfig
         run: |
-          echo "::set-output name=kubeconfig::$(terraform output -raw configure_kubectl)"
+          echo "::set-output name=configure_kubectl::$(terraform output -raw configure_kubectl)"
 
       - name: Set up Kubernetes context
         run: |
-          eval "${{ steps.get-kubeconfig.outputs.kubeconfig }}"
+          eval "${{ steps.get-kubeconfig.outputs.configure_kubectl }}"
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
