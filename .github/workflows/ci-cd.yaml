@@ -24,6 +24,25 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
+      # Terraform Provisioning
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init and Apply
+        run: |
+          cd ./terraform
+          terraform init
+          terraform apply -auto-approve
+
+      - name: Retrieve Kubernetes Config
+        id: get-kubeconfig
+        run: |
+          echo "::set-output name=kubeconfig::$(terraform output -raw configure_kubectl)"
+
+      - name: Set up Kubernetes context
+        run: |
+          eval "${{ steps.get-kubeconfig.outputs.kubeconfig }}"
+
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
 
@@ -32,3 +51,29 @@ jobs:
           docker build -t fintech-app-repo:${{ github.sha }} ./src
           docker tag fintech-app-repo:${{ github.sha }} ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
           docker push ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
+
+      # Update Deployment Image Tag
+      - name: Update Kubernetes Deployment Image Tag
+        run: |
+          sed -i "s|image:.*|image: ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}|" ./k8s/deployment.yaml
+
+      - name: Run Kubernetes Wrapper Script
+        run: chmod +x ./k8s/wrapper-rds-k8s.sh && ./k8s/wrapper-rds-k8s.sh
+
+      - name: Apply Ingress Controller
+        run: cd ./k8s && kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/aws/deploy.yaml
+
+      - name: Wait for Ingress Controller Setup
+        run: sleep 30
+
+      - name: Apply Kubernetes Manifests
+        run: |
+          kubectl apply -f ./k8s/
+          sleep 90
+
+      - name: Get Ingress Address
+        run: kubectl get ingress
+
+      - name: Check Pods Status
+        run: kubectl get pods
+
