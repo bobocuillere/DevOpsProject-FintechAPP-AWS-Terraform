@@ -37,6 +37,7 @@ jobs:
       - name: Retrieve Kubernetes Config
         id: get-kubeconfig
         run: |
+          cd ./terraform
           echo "::set-output name=configure_kubectl::$(terraform output -raw configure_kubectl)"
 
       - name: Set up Kubernetes context
