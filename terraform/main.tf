@@ -18,7 +18,7 @@ module "vpc" {
 
 resource "aws_ecr_repository" "fintech_ecr_repo" {
   name                 = "fintech-app-repo"
-  image_tag_mutability = "IMMUTABLE"
+  image_tag_mutability = "MUTABLE"
 
     tags = merge(
     local.common_tags,
