@@ -6,18 +6,14 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  # ---- Preparation Stage ----
+  preparation:
     runs-on: ubuntu-latest
-    environment:
-      name: AWS
     steps:
-      # ---- Preparation Stage ----
       - name: Checkout Code
         uses: actions/checkout@v2
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -25,67 +21,77 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
-      # ---- Build Stage ----
+  # ---- Build Stage ----
+  build:
+    needs: preparation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
       - name: Build Docker Image
         run: docker build -t fintech-app-repo:${{ github.sha }} ./src
 
-      # ---- Publish Stage ----
+  # ---- Publish Stage ----
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
-
       - name: Push Docker Image to Amazon ECR
         run: |
           docker tag fintech-app-repo:${{ github.sha }} ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
           docker push ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
 
-      # ---- Deployment Preparation Stage ----
+  # ---- Deployment Preparation Stage ----
+  deployment-preparation:
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
-
       - name: Terraform Init and Apply
         run: |
           cd ./terraform
           terraform init
           terraform apply -auto-approve
-
       - name: Retrieve and Set up Kubernetes Config
         run: |
           cd ./terraform
           eval "$(terraform output -raw configure_kubectl)"
 
-      # ---- Deployment Stage ----
+  # ---- Deployment Stage ----
+  deployment:
+    needs: deployment-preparation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
       - name: Update Kubernetes Deployment Image Tag
         run: |
           sed -i "s|image:.*|image: ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}|" ./k8s/deployment.yaml
           kubectl apply -f ./k8s/deployment.yaml
-
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f ./k8s/
           sleep 90
-
-      # ---- Monitoring Setup Stage ----
-      - name: Run Monitoring Setup Script
-        run: |
-          chmod +x ./scripts/setup_monitoring.sh
-          ./scripts/setup_monitoring.sh
-
-      # ---- Post-Deployment Stage ----
       - name: Check Pods Status
         run: kubectl get pods
-
       - name: Get Ingress Address
         run: kubectl get ingress
 
-      # ---- Monitoring Setup Stage ----
+  # ---- Monitoring Setup Stage ----
+  monitoring-setup:
+    needs: deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
       - name: Update Inventory with Latest IP Addresses
         run: python3 ./scripts/update_inventory.py
-
       - name: Generate Grafana API Key and Update AWS Secret
         run: python3 ./scripts/generate_grafana_api_key.py
-
       - name: Add Prometheus Data Source to Grafana
         run: python3 ./scripts/add_grafana_datasource.py
-
       - name: Add Dashboard to Grafana
         run: python3 ./scripts/add_grafana_dashboard.py
