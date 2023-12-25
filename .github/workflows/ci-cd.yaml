@@ -2,11 +2,8 @@ name: CI/CD for Fintech APP
 
 on:
   push:
-    paths:
-      - './src/**'
-      - './k8s/**'
-      - './terraform/**'
-      - './.github/workflows/**'
+    branches:
+      - main
 
 jobs:
   build-and-deploy:
