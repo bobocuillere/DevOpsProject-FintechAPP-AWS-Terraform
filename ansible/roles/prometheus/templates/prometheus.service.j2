@@ -1,0 +1,15 @@
+[Unit]
+Description=Prometheus Monitoring System
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+User=root
+ExecStart=/opt/prometheus-2.26.0.linux-amd64/prometheus \
+  --config.file=/opt/prometheus-2.26.0.linux-amd64/prometheus.yml \
+  --storage.tsdb.path=/opt/prometheus-2.26.0.linux-amd64/data \
+  --web.console.templates=/opt/prometheus-2.26.0.linux-amd64/consoles \
+  --web.console.libraries=/opt/prometheus-2.26.0.linux-amd64/console_libraries
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,47 @@
+---
+- name: Install necessary packages
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - wget
+      - curl
+
+- name: Download Prometheus
+  get_url:
+    url: https://github.com/prometheus/prometheus/releases/download/v2.26.0/prometheus-2.26.0.linux-amd64.tar.gz
+    dest: /tmp/prometheus.tar.gz
+
+- name: Extract Prometheus Tarball
+  unarchive:
+    src: /tmp/prometheus.tar.gz
+    dest: /opt
+    remote_src: yes
+
+- name: Configure Prometheus
+  template:
+    src: prometheus.yml.j2
+    dest: /opt/prometheus-2.26.0.linux-amd64/prometheus.yml
+  notify: restart prometheus
+
+- name: Create Prometheus system service file
+  template:
+    src: prometheus.service.j2
+    dest: /etc/systemd/system/prometheus.service
+  notify: 
+    - reload systemd
+    - restart prometheus
+
+
+- name: Reload systemd
+  become: true
+  systemd:
+    daemon_reload: yes
+
+- name: Ensure Prometheus service is running
+  become: true
+  systemd:
+    name: prometheus
+    state: started
+    enabled: yes
+

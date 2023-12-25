@@ -1,0 +1,20 @@
+---
+- name: Install Grafana
+  yum:
+    name: grafana
+    state: latest
+
+- name: Configure Grafana grafana.ini
+  become: true
+  template:
+    src: grafana.ini.j2
+    dest: /etc/grafana/grafana.ini
+  notify: restart grafana
+
+- name: Ensure Grafana service is running
+  become: true
+  systemd:
+    name: grafana-server
+    state: started
+    enabled: yes
+

@@ -21,3 +21,11 @@ output "rds_db_name" {
 output "rds_secret_arn" {
   value = module.rds.secret_arn
 }
+
+output "grafana_instance_ip" {
+  value = module.monitoring_ec2.grafana_instance_ip
+}
+
+output "prometheus_instance_ip" {
+  value = module.monitoring_ec2.prometheus_instance_ip
+}

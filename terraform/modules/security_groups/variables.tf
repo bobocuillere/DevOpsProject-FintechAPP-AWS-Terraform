@@ -3,11 +3,6 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "eks_cluster_cidr" {
-  description = "CIDR block for the EKS cluster."
-  type        = string
-}
-
 variable "common_tags" {
   description = "Common tags for all resources."
   type        = map(string)

@@ -1,0 +1,14 @@
+---
+- name: Configure Prometheus Server
+  hosts: prometheus
+  become: yes
+  roles:
+    - prometheus
+    
+- name: Configure Grafana Server
+  hosts: grafana
+  become: yes
+  roles:
+    - grafana
+
+

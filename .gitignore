@@ -58,3 +58,4 @@ docker-compose.override.yml
 .DS_Store
 Thumbs.db
 lib64
+terraform/fintech-monitoring.pem

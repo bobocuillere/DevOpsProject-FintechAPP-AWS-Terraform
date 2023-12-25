@@ -84,3 +84,18 @@ variable "db_port" {
 }
 
 # ... other variables ...
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+}
+
+variable "ebs_volume_size" {
+  description = "Size of the EBS volume in GB"
+  type        = number
+
+}
+
+variable "key_pair_name" {
+  description = "Name of the existing AWS key pair"
+  type        = string
+}

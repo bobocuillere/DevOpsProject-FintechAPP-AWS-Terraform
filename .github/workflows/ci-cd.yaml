@@ -11,9 +11,10 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    environment:  # Declare the environment name here
+    environment:
       name: AWS
     steps:
+      # ---- Preparation Stage ----
       - name: Checkout Code
         uses: actions/checkout@v2
 
@@ -27,7 +28,20 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
-      # Terraform Provisioning
+      # ---- Build Stage ----
+      - name: Build Docker Image
+        run: docker build -t fintech-app-repo:${{ github.sha }} ./src
+
+      # ---- Publish Stage ----
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Push Docker Image to Amazon ECR
+        run: |
+          docker tag fintech-app-repo:${{ github.sha }} ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
+          docker push ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
+
+      # ---- Deployment Preparation Stage ----
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
 
@@ -37,51 +51,44 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
-      - name: Retrieve Kubernetes Config
-        id: get-kubeconfig
+      - name: Retrieve and Set up Kubernetes Config
         run: |
           cd ./terraform
-          echo "::set-output name=configure_kubectl::$(terraform output -raw configure_kubectl)"
+          eval "$(terraform output -raw configure_kubectl)"
 
-      - name: Set up Kubernetes context
-        run: |
-          eval "${{ steps.get-kubeconfig.outputs.configure_kubectl }}"
-
-
-      - name: Check Pods Status Before Deployment
-        run: kubectl get pods
-
-      - name: Login to Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Build, tag, and push Docker image to Amazon ECR
-        run: |
-          docker build -t fintech-app-repo:${{ github.sha }} ./src
-          docker tag fintech-app-repo:${{ github.sha }} ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
-          docker push ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
-
-      # Update Deployment Image Tag
+      # ---- Deployment Stage ----
       - name: Update Kubernetes Deployment Image Tag
         run: |
           sed -i "s|image:.*|image: ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}|" ./k8s/deployment.yaml
-
-      - name: Run Kubernetes Wrapper Script
-        run: chmod +x ./k8s/wrapper-rds-k8s.sh && ./k8s/wrapper-rds-k8s.sh
-
-      - name: Apply Ingress Controller
-        run: cd ./k8s && kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/aws/deploy.yaml
-
-      - name: Wait for Ingress Controller Setup
-        run: sleep 30
+          kubectl apply -f ./k8s/deployment.yaml
 
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f ./k8s/
           sleep 90
 
-      - name: Get Ingress Address
-        run: kubectl get ingress
+      # ---- Monitoring Setup Stage ----
+      - name: Run Monitoring Setup Script
+        run: |
+          chmod +x ./scripts/setup_monitoring.sh
+          ./scripts/setup_monitoring.sh
 
+      # ---- Post-Deployment Stage ----
       - name: Check Pods Status
         run: kubectl get pods
 
+      - name: Get Ingress Address
+        run: kubectl get ingress
+
+      # ---- Monitoring Setup Stage ----
+      - name: Update Inventory with Latest IP Addresses
+        run: python3 ./scripts/update_inventory.py
+
+      - name: Generate Grafana API Key and Update AWS Secret
+        run: python3 ./scripts/generate_grafana_api_key.py
+
+      - name: Add Prometheus Data Source to Grafana
+        run: python3 ./scripts/add_grafana_datasource.py
+
+      - name: Add Dashboard to Grafana
+        run: python3 ./scripts/add_grafana_dashboard.py

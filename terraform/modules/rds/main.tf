@@ -21,6 +21,9 @@ resource "random_string" "db_username" {
   length  = 8
   special = false
   upper   = false
+
+  override_special = "/@\" "  
+  
 }
 
 resource "aws_secretsmanager_secret_version" "db_credentials" {
@@ -28,6 +31,8 @@ resource "aws_secretsmanager_secret_version" "db_credentials" {
   secret_string = jsonencode({
     username = random_string.db_username.result
     password = random_password.db_password.result
+    grafana_api_key = "placeholder" # This will be replaced by the actual key in the python script on the ansible folder
+
   })
 
 }
