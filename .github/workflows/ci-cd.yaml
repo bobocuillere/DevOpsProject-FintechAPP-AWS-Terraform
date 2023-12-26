@@ -41,7 +41,7 @@ jobs:
         run: |
           cd ./terraform
           terraform init
-          terraform destroy -auto-approve
+          terraform destroy -auto-approve 
 
   # ---- Build Stage ----
   build:
