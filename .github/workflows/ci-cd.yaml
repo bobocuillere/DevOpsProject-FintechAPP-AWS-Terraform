@@ -119,7 +119,6 @@ jobs:
           PLATFORM=$(uname -s)_$ARCH
           curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
           tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp
-          ls /tmp
           sudo mv /tmp/eksctl /usr/local/bin
 
       - name: Add IAM User to EKS Cluster
@@ -182,7 +181,9 @@ jobs:
 
       - name: Update Inventory with Latest IP Addresses
         run: |
-          cd ./ansible
+          cd ./terraform
+          terraform Init
+          cd ../ansible
           python3 update_inventory.py
       - name: Generate Grafana API Key and Update AWS Secret
         run: |
