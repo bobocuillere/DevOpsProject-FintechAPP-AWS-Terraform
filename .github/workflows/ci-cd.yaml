@@ -169,8 +169,8 @@ jobs:
       - name: run k8s script
         run: |
           cd ./k8s/
-          chmod +x wrapper-rds-k8s.sh
-          wrapper-rds-k8s.sh
+          chmod +x ./wrapper-rds-k8s.sh
+          ./wrapper-rds-k8s.sh
 
       - name: Update Kubernetes Deployment Image Tag
         run: |
