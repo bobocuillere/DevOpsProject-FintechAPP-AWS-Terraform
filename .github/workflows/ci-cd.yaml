@@ -145,19 +145,18 @@ jobs:
           EOF
           python3 modify_aws_auth.py
           cat aws-auth.yaml
-
-      - name: Apply Updated aws-auth ConfigMap
-        run: |
-          cd ./k8s/
-          kubectl apply -f aws-auth.yaml
-
-
+      
       - name: display aws-auth config map after modification
         run: | 
           cd ./k8s/
           cat modify_aws_auth.py
           cat aws-auth.yaml
           kubectl get -n kube-system configmap/aws-auth -o yaml
+
+      - name: Apply Updated aws-auth ConfigMap
+        run: |
+          cd ./k8s/
+          kubectl apply -f aws-auth.yaml
 
       - name: run k8s script
         run: |
