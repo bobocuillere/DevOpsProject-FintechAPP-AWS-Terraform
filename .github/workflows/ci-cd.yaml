@@ -196,10 +196,13 @@ jobs:
           pip3 install requests
           pip3 install python-dotenv
 
+      - name : terraform init
+        run: |
+          cd ./terraform
+          terraform init
+
       - name: Update Inventory with Latest IP Addresses
         run: |
-          cd ./terraform 
-          terraform init
           cd ../.ansible
           python3 update_inventory.py
       - name: Generate Grafana API Key and Update AWS Secret
