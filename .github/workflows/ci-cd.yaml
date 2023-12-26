@@ -153,16 +153,16 @@ jobs:
       - name: Update Inventory with Latest IP Addresses
         run: |
           cd ./ansible
-          python3 ./ansible/update_inventory.py
+          python3 update_inventory.py
       - name: Generate Grafana API Key and Update AWS Secret
         run: |
           cd ./ansible
-          python3 ./ansible/generate_grafana_api_key.py
+          python3 generate_grafana_api_key.py
       - name: Add Prometheus Data Source to Grafana
         run: |
           cd ./ansible
-          python3 ./scripts/add_grafana_datasource.py
+          python3 add_grafana_datasource.py
       - name: Add Dashboard to Grafana
         run: |
           cd ./ansible
-          python3 ./ansible/add_grafana_dashboard.py
+          python3 add_grafana_dashboard.py
