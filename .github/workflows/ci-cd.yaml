@@ -30,6 +30,14 @@ jobs:
         uses: actions/checkout@v2
       - name: Build Docker Image
         run: docker build -t fintech-app-repo:${{ github.sha }} ./src
+      - name: Save Docker Image
+        run: |
+          docker save fintech-app-repo:${{ github.sha }} > fintech-app.tar
+      - name: Upload Docker Image Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: docker-image
+          path: fintech-app.tar
 
   # ---- Publish Stage ----
   publish:
@@ -38,6 +46,14 @@ jobs:
     steps:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: docker-image
+          path: .
+      - name: Load Docker Image
+        run: docker load < fintech-app.tar
+      - uses: aws-actions/amazon-ecr-login@v2
+      
       - name: Push Docker Image to Amazon ECR
         run: |
           docker tag fintech-app-repo:${{ github.sha }} ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
