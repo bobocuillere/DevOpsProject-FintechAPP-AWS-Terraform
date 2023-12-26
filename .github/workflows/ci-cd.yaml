@@ -209,6 +209,7 @@ jobs:
         run: |
           cd ./ansible
           python3 add_grafana_datasource.py
+          
       - name: Add Dashboard to Grafana
         run: |
           cd ./ansible
