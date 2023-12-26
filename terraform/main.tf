@@ -19,7 +19,7 @@ module "vpc" {
 resource "aws_ecr_repository" "fintech_ecr_repo" {
   name                 = "fintech-app-repo"
   image_tag_mutability = "MUTABLE"
-  force_delete = yes
+  force_delete         = yes
 
   tags = merge(
     local.common_tags,
