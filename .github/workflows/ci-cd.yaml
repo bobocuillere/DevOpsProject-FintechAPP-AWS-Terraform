@@ -192,6 +192,10 @@ jobs:
           terraform init
           cd ../ansible
           python3 update_inventory.py
+      - name: ansible playbook for the monitoring
+        run: |
+          cd ./ansible
+          ansible-playbook playbook.yml
       - name: Generate Grafana API Key and Update AWS Secret
         run: |
           cd ./ansible
