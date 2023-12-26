@@ -116,47 +116,60 @@ jobs:
           cd ./k8s/
           kubectl get -n kube-system configmap/aws-auth -o yaml > aws-auth.yaml
       
-      - name: Create a python script
+      - name: Modify aws-auth ConfigMap
+        env:
+          USER_ARN: ${{ secrets.USER_ARN }}
         run: |
           cd ./k8s/
-          cat << EOF > modify_aws_auth.py
-          import yaml
+          cat << 'EOF' > modify_aws_auth.py
+          import yaml, os
 
           def add_map_users_to_aws_auth(file_path, user_arn, username):
-            with open(file_path, 'r') as file:
-              aws_auth = yaml.safe_load(file)
+              with open(file_path, 'r') as file:
+                  aws_auth = yaml.safe_load(file)
 
-            map_users = [
-              {
-                "userarn": user_arn,
-                "username": username,
-                "groups": ["system:masters"]
-              }
-            ]
+              map_users_entry = f"""
+              - userarn: {user_arn}
+                username: {username}
+                groups:
+                  - system:masters
+              """
 
-            if 'mapUsers' not in aws_auth['data']:
-              aws_auth['data']['mapUsers'] = yaml.dump(map_users, default_flow_style=False).strip()
+              if "mapUsers" in aws_auth["data"]:
+                  aws_auth["data"]["mapUsers"] += "\\n" + map_users_entry
+              else:
+                  aws_auth["data"]["mapUsers"] = map_users_entry.strip()
 
-            with open(file_path, 'w') as file:
-              yaml.dump(aws_auth, file)
+              with open(file_path, 'w') as file:
+                  yaml.dump(aws_auth, file, default_flow_style=False)
 
           if __name__ == '__main__':
-            add_map_users_to_aws_auth('aws-auth.yaml', '${{ secrets.USER_ARN }}', 'Soso')
+              user_arn = os.getenv("USER_ARN")
+              add_map_users_to_aws_auth('aws-auth.yaml', user_arn, 'YourNewUser')
           EOF
-
-      - name: Modify aws-auth ConfigMap
-        run: |
-          cd ./k8s/ 
-          chmod +x modify_aws_auth.py
           python3 modify_aws_auth.py
+
+
+      # - name: Modify aws-auth ConfigMap
+      #   run: |
+      #     cd ./k8s/ 
+      #     chmod +x modify_aws_auth.py
+      #     python3 modify_aws_auth.py
 
       - name: display aws-auth config map after modification
         run: | 
           cd ./k8s/
+          cat modify_aws_auth.py
           cat aws-auth.yaml
 
       # - name: Apply Updated aws-auth ConfigMap
       #   run: kubectl apply -f aws-auth.yaml
+
+      - name: run k8s script
+        run: |
+          cd ./k8s/
+          chmod +x rds
+          wrapper-rds-k8s.sh
 
       - name: Update Kubernetes Deployment Image Tag
         run: |
@@ -197,11 +210,6 @@ jobs:
           pip3 install boto3
           pip3 install requests
           pip3 install python-dotenv
-
-      - name : terraform init
-        run: |
-          cd ./terraform
-          terraform init
 
       - name: Update Inventory with Latest IP Addresses
         run: |
