@@ -111,6 +111,7 @@ jobs:
           cd ./terraform
           terraform init
           eval "$(terraform output -raw configure_kubectl)"
+
       - name: Get aws-auth ConfigMap
         run: |
           cd ./k8s/
@@ -136,10 +137,8 @@ jobs:
                   - system:masters
               """
 
-              if "mapUsers" in aws_auth["data"]:
-                  aws_auth["data"]["mapUsers"] += "\\n" + map_users_entry
-              else:
-                  aws_auth["data"]["mapUsers"] = map_users_entry.strip()
+              # Replace existing mapUsers section
+              aws_auth["data"]["mapUsers"] = map_users_entry.strip()
 
               with open(file_path, 'w') as file:
                   yaml.dump(aws_auth, file, default_flow_style=False)
@@ -149,6 +148,8 @@ jobs:
               add_map_users_to_aws_auth('aws-auth.yaml', user_arn, 'Soso')
           EOF
           python3 modify_aws_auth.py
+          cat aws-auth.yaml
+
 
 
       - name: display aws-auth config map after modification
