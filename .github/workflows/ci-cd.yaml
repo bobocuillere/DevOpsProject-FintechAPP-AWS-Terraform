@@ -198,6 +198,8 @@ jobs:
 
       - name: Update Inventory with Latest IP Addresses
         run: |
+          cd ./terraform 
+          terraform init
           cd ./ansible
           python3 update_inventory.py
       - name: Generate Grafana API Key and Update AWS Secret
