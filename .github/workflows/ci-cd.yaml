@@ -115,9 +115,39 @@ jobs:
         run: |
           cd ./k8s/
           kubectl get -n kube-system configmap/aws-auth -o yaml > aws-auth.yaml
+      
+      - name: Create a python script
+        run: |
+          cd ./k8s/
+          cat << EOF > modify_aws_auth.py
+          import yaml
+
+          def add_map_users_to_aws_auth(file_path, user_arn, username):
+            with open(file_path, 'r') as file:
+              aws_auth = yaml.safe_load(file)
+
+            map_users = [
+              {
+                "userarn": user_arn,
+                "username": username,
+                "groups": ["system:masters"]
+              }
+            ]
+
+            if 'mapUsers' not in aws_auth['data']:
+              aws_auth['data']['mapUsers'] = yaml.dump(map_users, default_flow_style=False).strip()
+
+            with open(file_path, 'w') as file:
+              yaml.dump(aws_auth, file)
+
+          if __name__ == '__main__':
+            add_map_users_to_aws_auth('aws-auth.yaml', '${{ secrets.USER_ARN }}', 'Soso')
+          EOF
+
       - name: Modify aws-auth ConfigMap
         run: |
           cd ./k8s/ 
+          chmod +x modify_aws_auth.py
           python3 modify_aws_auth.py
 
       - name: display aws-auth config map after modification
