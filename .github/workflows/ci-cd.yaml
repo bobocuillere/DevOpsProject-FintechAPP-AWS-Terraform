@@ -190,11 +190,14 @@ jobs:
           cd ../ansible
           python3 update_inventory.py
 
+      - name: Create PEM Key File
+        run: |
+          echo -e "${{ secrets.PEM_KEY }}" > ../terraform/fintech-monitoring.pem
+          chmod 400 ../terraform/fintech-monitoring.pem
+
       - name: ansible playbook for the monitoring
         run: |
           cd ./ansible
-          chmod 400 ../terraform/fintech-monitoring.pem
-          ls ../terraform
           ansible-playbook playbook.yml
 
       - name: Generate Grafana API Key and Update AWS Secret
