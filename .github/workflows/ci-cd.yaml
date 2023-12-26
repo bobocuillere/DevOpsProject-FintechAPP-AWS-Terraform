@@ -200,7 +200,7 @@ jobs:
         run: |
           cd ./terraform 
           terraform init
-          cd ./ansible
+          cd ../.ansible
           python3 update_inventory.py
       - name: Generate Grafana API Key and Update AWS Secret
         run: |
