@@ -139,6 +139,7 @@ jobs:
         run: | 
           cd ./k8s/
           kubectl get -n kube-system configmap/aws-auth -o yaml
+          eksctl get iamidentitymapping --cluster fintech-eks-cluster
 
       - name: run k8s script
         run: |
@@ -149,11 +150,7 @@ jobs:
       - name: Update Kubernetes Deployment Image Tag
         run: |
           sed -i "s|image:.*|image: ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}|" ./k8s/deployment.yaml
-      - name: display k8s/deployment.yaml
-        run: cat ./k8s/deployment.yaml
-      - name: display configmap/aws-auth in yaml
-        run: kubectl get -n kube-system configmap/aws-auth -o yaml
-
+      
       - name: Apply Kubernetes Ingress
         run: |
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/aws/deploy.yaml
@@ -192,10 +189,13 @@ jobs:
           terraform init
           cd ../ansible
           python3 update_inventory.py
+
       - name: ansible playbook for the monitoring
         run: |
           cd ./ansible
+          chmod 400 ../terraform/fintech-monitoring.pem
           ansible-playbook playbook.yml
+
       - name: Generate Grafana API Key and Update AWS Secret
         run: |
           cd ./ansible
