@@ -112,12 +112,14 @@ jobs:
           terraform init
           eval "$(terraform output -raw configure_kubectl)"
 
+  
       - name: Install eksctl
         run: |
           ARCH=amd64
           PLATFORM=$(uname -s)_$ARCH
-
-          curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz" | tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp
+          curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
+          tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp
+          ls /tmp
           sudo mv /tmp/eksctl /usr/local/bin
 
       - name: Add IAM User to EKS Cluster
