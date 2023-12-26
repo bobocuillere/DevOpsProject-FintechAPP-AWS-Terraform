@@ -112,60 +112,25 @@ jobs:
           terraform init
           eval "$(terraform output -raw configure_kubectl)"
 
-      - name: Get aws-auth ConfigMap
+      - name: Install eksctl
         run: |
-          cd ./k8s/
-          kubectl get -n kube-system configmap/aws-auth -o yaml > aws-auth.yaml
+          ARCH=amd64
+          PLATFORM=$(uname -s)_$ARCH
 
-      - name: Modify aws-auth ConfigMap
+          curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"" | tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp
+          sudo mv /tmp/eksctl /usr/local/bin
+
+      - name: Add IAM User to EKS Cluster
         env:
+          CLUSTER_NAME: fintech-eks-cluster # Replace with your actual cluster name
           USER_ARN: ${{ secrets.USER_ARN }}
         run: |
-          cd ./k8s/
-          cat << 'EOF' > modify_aws_auth.py
-          import yaml, os
-
-          def add_map_users_to_aws_auth(file_path, user_arn, username):
-              with open(file_path, 'r') as file:
-                  aws_auth = yaml.safe_load(file)
-
-              new_user = {
-                  "userarn": user_arn,
-                  "username": username,
-                  "groups": ["system:masters"]
-              }
-
-              if "mapUsers" in aws_auth["data"]:
-                  existing_users = yaml.safe_load(aws_auth["data"]["mapUsers"])
-                  if not isinstance(existing_users, list):
-                      existing_users = [existing_users]
-                  existing_users.append(new_user)
-              else:
-                  existing_users = [new_user]
-
-              aws_auth["data"]["mapUsers"] = yaml.dump(existing_users, default_flow_style=False).strip()
-
-              with open(file_path, 'w') as file:
-                  yaml.dump(aws_auth, file, default_flow_style=False)
-
-          if __name__ == '__main__':
-              user_arn = os.getenv("USER_ARN")
-              add_map_users_to_aws_auth('aws-auth.yaml', user_arn, 'Soso')
-          EOF
-          python3 modify_aws_auth.py
-          cat aws-auth.yaml
+          eksctl create iamidentitymapping --cluster "$CLUSTER_NAME" --arn "$USER_ARN" --username soso --group system:masters
       
       - name: display aws-auth config map after modification
         run: | 
           cd ./k8s/
-          cat modify_aws_auth.py
-          cat aws-auth.yaml
           kubectl get -n kube-system configmap/aws-auth -o yaml
-
-      - name: Apply Updated aws-auth ConfigMap
-        run: |
-          cd ./k8s/
-          kubectl apply -f aws-auth.yaml
 
       - name: run k8s script
         run: |
@@ -184,11 +149,11 @@ jobs:
       - name: Apply Kubernetes Ingress
         run: |
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/aws/deploy.yaml
-          sleep 20
+          sleep 30
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f ./k8s/
-          sleep 10
+          sleep 20
       - name: Check Pods Status
         run: kubectl get pods
       - name: Get Ingress Address
