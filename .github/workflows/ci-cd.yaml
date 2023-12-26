@@ -149,8 +149,8 @@ jobs:
           cd ./k8s/
           python3 modify_aws_auth.py
 
-      # - name: Apply Updated aws-auth ConfigMap
-      #   run: kubectl apply -f ./k8s/aws-auth.yaml
+      - name: Apply Updated aws-auth ConfigMap
+        run: kubectl apply -f ./k8s/aws-auth.yaml
 
       - name: display aws-auth config map after modification
         run: | 
@@ -209,7 +209,7 @@ jobs:
 
       - name: Update Inventory with Latest IP Addresses
         run: |
-          cd ../.ansible
+          cd ./ansible
           python3 update_inventory.py
       - name: Generate Grafana API Key and Update AWS Secret
         run: |
