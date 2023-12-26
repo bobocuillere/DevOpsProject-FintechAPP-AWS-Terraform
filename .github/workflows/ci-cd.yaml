@@ -149,6 +149,10 @@ jobs:
         run: |
           pip3 install boto3
           pip3 install requests
+          pip3 install yaml
+          pip3 install json
+          pip3 install os
+          pip3 install python-dotenv
 
       - name: Update Inventory with Latest IP Addresses
         run: |
