@@ -142,10 +142,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
       - name: Update Inventory with Latest IP Addresses
-        run: python3 ./scripts/update_inventory.py
+        run: python3 ./ansible/update_inventory.py
       - name: Generate Grafana API Key and Update AWS Secret
-        run: python3 ./scripts/generate_grafana_api_key.py
+        run: python3 ./ansible/generate_grafana_api_key.py
       - name: Add Prometheus Data Source to Grafana
         run: python3 ./scripts/add_grafana_datasource.py
       - name: Add Dashboard to Grafana
-        run: python3 ./scripts/add_grafana_dashboard.py
+        run: python3 ./ansible/add_grafana_dashboard.py
