@@ -111,14 +111,18 @@ jobs:
       - name: Retrieve and Set up Kubernetes Config
         run: |
           cd ./terraform
+          terraform init
           eval "$(terraform output -raw configure_kubectl)"
       - name: Update Kubernetes Deployment Image Tag
         run: |
           sed -i "s|image:.*|image: ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}|" ./k8s/deployment.yaml
+      - name: Apply Kubernetes Ingress
+        run: |
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/aws/deploy.yaml
+          sleep 60
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f ./k8s/
-          sleep 90
       - name: Check Pods Status
         run: kubectl get pods
       - name: Get Ingress Address
