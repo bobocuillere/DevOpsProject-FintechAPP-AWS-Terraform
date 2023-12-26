@@ -116,6 +116,9 @@ jobs:
       - name: Update Kubernetes Deployment Image Tag
         run: |
           sed -i "s|image:.*|image: ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}|" ./k8s/deployment.yaml
+      - name: display k8s/deployment.yaml
+        run: cat ./k8s/deployment.yaml
+
       - name: Apply Kubernetes Ingress
         run: |
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/aws/deploy.yaml
@@ -123,6 +126,9 @@ jobs:
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f ./k8s/
+      - name: Wait for Pods to be Running
+        run: |
+          kubectl wait --for=condition=Running pods --all --timeout=60s
       - name: Check Pods Status
         run: kubectl get pods
       - name: Get Ingress Address
@@ -141,6 +147,11 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
+      - name: install with pip the following packages
+        run: |
+          pip3 install boto3
+          pip3 install requests
+          pip3 install ansible
       - name: Update Inventory with Latest IP Addresses
         run: python3 ./ansible/update_inventory.py
       - name: Generate Grafana API Key and Update AWS Secret
