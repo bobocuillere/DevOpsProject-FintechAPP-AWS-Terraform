@@ -124,16 +124,18 @@ jobs:
         run: |
           cd ./k8s/
           cat << 'EOF' > modify_aws_auth.py
-          # modify_aws_auth.py
           import yaml, os
 
           def add_map_users_to_aws_auth(file_path, user_arn, username):
               with open(file_path, 'r') as file:
                   aws_auth = yaml.safe_load(file)
 
-              map_users_entry = f"- userarn: {user_arn}\n  username: {username}\n  groups:\n    - system:masters\n"
+              map_users_entry = f"- userarn: {user_arn}\\n  username: {username}\\n  groups:\\n    - system:masters"
 
-              aws_auth["data"]["mapUsers"] = map_users_entry.strip()
+              if "mapUsers" in aws_auth["data"]:
+                  aws_auth["data"]["mapUsers"] += "\\n" + map_users_entry
+              else:
+                  aws_auth["data"]["mapUsers"] = map_users_entry.strip()
 
               with open(file_path, 'w') as file:
                   yaml.dump(aws_auth, file, default_flow_style=False)
@@ -141,8 +143,9 @@ jobs:
           if __name__ == '__main__':
               user_arn = os.getenv("USER_ARN")
               add_map_users_to_aws_auth('aws-auth.yaml', user_arn, 'Soso')
+          EOF
 
-      - name: Modify aws-auth ConfigMap
+      - name: Run modify_aws_auth.py
         env:
           USER_ARN: ${{ secrets.USER_ARN }}
         run: |
