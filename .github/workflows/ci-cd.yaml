@@ -41,7 +41,7 @@ jobs:
         run: |
           cd ./terraform
           terraform init
-          terraform apply -auto-approve
+          terraform destroy -auto-approve
 
   # ---- Build Stage ----
   build:
@@ -150,12 +150,6 @@ jobs:
           EOF
           python3 modify_aws_auth.py
 
-
-      # - name: Modify aws-auth ConfigMap
-      #   run: |
-      #     cd ./k8s/ 
-      #     chmod +x modify_aws_auth.py
-      #     python3 modify_aws_auth.py
 
       - name: display aws-auth config map after modification
         run: | 
