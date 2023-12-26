@@ -151,7 +151,9 @@ jobs:
           python3 modify_aws_auth.py
 
       - name: display aws-auth config map after modification
-        run: kubectl get -n kube-system configmap/aws-auth -o yaml
+        run: | 
+          cd ./k8s/
+          cat aws-auth.yaml
 
       # - name: Apply Updated aws-auth ConfigMap
       #   run: kubectl apply -f aws-auth.yaml
