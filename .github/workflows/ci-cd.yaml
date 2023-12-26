@@ -55,6 +55,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
 
       - name: Build Docker Image
         run: docker build -t fintech-app-repo:${{ github.sha }} ./src
@@ -77,6 +78,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
         with:
@@ -133,6 +135,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
       - name: Update Inventory with Latest IP Addresses
         run: python3 ./scripts/update_inventory.py
       - name: Generate Grafana API Key and Update AWS Secret
