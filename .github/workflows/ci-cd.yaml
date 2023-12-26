@@ -129,12 +129,21 @@ jobs:
               with open(file_path, 'r') as file:
                   aws_auth = yaml.safe_load(file)
 
-              map_users_entry = f"- userarn: {user_arn}\\n  username: {username}\\n  groups:\\n    - system:masters"
+              new_user = {
+                  "userarn": user_arn,
+                  "username": username,
+                  "groups": ["system:masters"]
+              }
 
               if "mapUsers" in aws_auth["data"]:
-                  aws_auth["data"]["mapUsers"] += "\\n" + map_users_entry
+                  existing_users = yaml.safe_load(aws_auth["data"]["mapUsers"])
+                  if not isinstance(existing_users, list):
+                      existing_users = [existing_users]
+                  existing_users.append(new_user)
               else:
-                  aws_auth["data"]["mapUsers"] = map_users_entry.strip()
+                  existing_users = [new_user]
+
+              aws_auth["data"]["mapUsers"] = yaml.dump(existing_users, default_flow_style=False).strip()
 
               with open(file_path, 'w') as file:
                   yaml.dump(aws_auth, file, default_flow_style=False)
