@@ -121,13 +121,20 @@ jobs:
           tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp
           sudo mv /tmp/eksctl /usr/local/bin
 
-      - name: Add IAM User to EKS Cluster
+      - name: Check and Add IAM User to EKS Cluster
         env:
           CLUSTER_NAME: fintech-eks-cluster # Replace with your actual cluster name
           USER_ARN: ${{ secrets.USER_ARN }}
         run: |
-          eksctl create iamidentitymapping --cluster "$CLUSTER_NAME" --arn "$USER_ARN" --username Soso --group system:masters
-      
+          # Check if the user is already mapped to the EKS cluster
+          if eksctl get iamidentitymapping --cluster "$CLUSTER_NAME" --arn "$USER_ARN" | grep -q "$USER_ARN"; then
+            echo "User ARN $USER_ARN is already mapped to the EKS cluster"
+          else
+            # Add the user to the EKS cluster
+            eksctl create iamidentitymapping --cluster "$CLUSTER_NAME" --arn "$USER_ARN" --username Soso --group system:masters
+            echo "User ARN $USER_ARN added to the EKS cluster"
+          fi
+
       - name: display aws-auth config map after modification
         run: | 
           cd ./k8s/
@@ -150,11 +157,11 @@ jobs:
       - name: Apply Kubernetes Ingress
         run: |
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/aws/deploy.yaml
-          sleep 30
+          sleep 25
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f ./k8s/
-          sleep 20
+
       - name: Check Pods Status
         run: kubectl get pods
       - name: Get Ingress Address
@@ -182,7 +189,7 @@ jobs:
       - name: Update Inventory with Latest IP Addresses
         run: |
           cd ./terraform
-          terraform Init
+          terraform init
           cd ../ansible
           python3 update_inventory.py
       - name: Generate Grafana API Key and Update AWS Secret
