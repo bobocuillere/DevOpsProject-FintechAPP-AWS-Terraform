@@ -115,6 +115,7 @@ jobs:
         run: |
           cd ./k8s/
           kubectl get -n kube-system configmap/aws-auth -o yaml > aws-auth.yaml
+          cat aws-auth.yaml
       
       - name: Modify aws-auth ConfigMap
         env:
@@ -145,7 +146,7 @@ jobs:
 
           if __name__ == '__main__':
               user_arn = os.getenv("USER_ARN")
-              add_map_users_to_aws_auth('aws-auth.yaml', user_arn, 'YourNewUser')
+              add_map_users_to_aws_auth('aws-auth.yaml', user_arn, 'Soso')
           EOF
           python3 modify_aws_auth.py
 
@@ -168,7 +169,7 @@ jobs:
       - name: run k8s script
         run: |
           cd ./k8s/
-          chmod +x rds
+          chmod +x wrapper-rds-k8s.sh
           wrapper-rds-k8s.sh
 
       - name: Update Kubernetes Deployment Image Tag
