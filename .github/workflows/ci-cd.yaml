@@ -138,7 +138,7 @@ jobs:
       - name: display aws-auth config map after modification
         run: | 
           cd ./k8s/
-          kubectl get -n kube-system configmap/aws-auth -o yaml
+          # kubectl get -n kube-system configmap/aws-auth -o yaml
           eksctl get iamidentitymapping --cluster fintech-eks-cluster
 
       - name: run k8s script
@@ -194,6 +194,7 @@ jobs:
         run: |
           cd ./ansible
           chmod 400 ../terraform/fintech-monitoring.pem
+          ls ../terraform
           ansible-playbook playbook.yml
 
       - name: Generate Grafana API Key and Update AWS Secret
