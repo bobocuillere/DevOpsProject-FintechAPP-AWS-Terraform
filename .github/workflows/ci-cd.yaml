@@ -117,7 +117,7 @@ jobs:
           ARCH=amd64
           PLATFORM=$(uname -s)_$ARCH
 
-          curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"" | tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp
+          curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz" | tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp
           sudo mv /tmp/eksctl /usr/local/bin
 
       - name: Add IAM User to EKS Cluster
@@ -125,7 +125,7 @@ jobs:
           CLUSTER_NAME: fintech-eks-cluster # Replace with your actual cluster name
           USER_ARN: ${{ secrets.USER_ARN }}
         run: |
-          eksctl create iamidentitymapping --cluster "$CLUSTER_NAME" --arn "$USER_ARN" --username soso --group system:masters
+          eksctl create iamidentitymapping --cluster "$CLUSTER_NAME" --arn "$USER_ARN" --username Soso --group system:masters
       
       - name: display aws-auth config map after modification
         run: | 
