@@ -118,6 +118,8 @@ jobs:
           sed -i "s|image:.*|image: ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}|" ./k8s/deployment.yaml
       - name: display k8s/deployment.yaml
         run: cat ./k8s/deployment.yaml
+      - name: display configmap/aws-auth in yaml
+        run: kubectl get -n kube-system configmap/aws-auth -o yaml
 
       - name: Apply Kubernetes Ingress
         run: |
@@ -149,7 +151,7 @@ jobs:
         run: |
           pip3 install boto3
           pip3 install requests
-          
+
       - name: Go into ansible directory
         run: cd ./ansible
       - name: Update Inventory with Latest IP Addresses

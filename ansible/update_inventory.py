@@ -3,7 +3,7 @@ import boto3
 import yaml
 
 # Load vars.yml
-with open('./vars.yml') as file:
+with open('vars.yml') as file:
     vars_data = yaml.safe_load(file)
 aws_region = vars_data['aws_region'] 
 
