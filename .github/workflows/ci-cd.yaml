@@ -192,6 +192,7 @@ jobs:
 
       - name: Create PEM Key File
         run: |
+          cd ./ansible
           echo -e "${{ secrets.PEM_KEY }}" > ../terraform/fintech-monitoring.pem
           chmod 400 ../terraform/fintech-monitoring.pem
 
