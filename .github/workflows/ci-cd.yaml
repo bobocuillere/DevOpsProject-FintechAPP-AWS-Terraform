@@ -21,9 +21,24 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-central-1
 
+  # ---- Terraform Provisioning Stage ----
+  terraform-provisioning:
+    needs: preparation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Terraform Init and Apply
+        run: |
+          cd ./terraform
+          terraform init
+          terraform apply -auto-approve
+
   # ---- Build Stage ----
   build:
-    needs: preparation
+    needs: terraform-provisioning
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -46,6 +61,8 @@ jobs:
     steps:
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
+        with:
+          aws-region: eu-central-1
       - uses: actions/download-artifact@v2
         with:
           name: docker-image
@@ -53,40 +70,25 @@ jobs:
       - name: Load Docker Image
         run: docker load < fintech-app.tar
       - uses: aws-actions/amazon-ecr-login@v2
-      
       - name: Push Docker Image to Amazon ECR
         run: |
           docker tag fintech-app-repo:${{ github.sha }} ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
           docker push ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
 
-  # ---- Deployment Preparation Stage ----
-  deployment-preparation:
-    needs: publish
-    runs-on: ubuntu-latest
-    steps:
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
-      - name: Terraform Init and Apply
-        run: |
-          cd ./terraform
-          terraform init
-          terraform apply -auto-approve
-      - name: Retrieve and Set up Kubernetes Config
-        run: |
-          cd ./terraform
-          eval "$(terraform output -raw configure_kubectl)"
-
   # ---- Deployment Stage ----
   deployment:
-    needs: deployment-preparation
+    needs: publish
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
+      - name: Retrieve and Set up Kubernetes Config
+        run: |
+          cd ./terraform
+          eval "$(terraform output -raw configure_kubectl)"
       - name: Update Kubernetes Deployment Image Tag
         run: |
           sed -i "s|image:.*|image: ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}|" ./k8s/deployment.yaml
-          kubectl apply -f ./k8s/deployment.yaml
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f ./k8s/
