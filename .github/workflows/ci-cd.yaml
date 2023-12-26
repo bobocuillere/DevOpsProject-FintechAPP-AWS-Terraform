@@ -111,6 +111,21 @@ jobs:
           cd ./terraform
           terraform init
           eval "$(terraform output -raw configure_kubectl)"
+      - name: Get aws-auth ConfigMap
+        run: |
+          cd ./k8s/
+          kubectl get -n kube-system configmap/aws-auth -o yaml > aws-auth.yaml
+      - name: Modify aws-auth ConfigMap
+        run: |
+          cd ./k8s/ 
+          python3 modify_aws_auth.py
+
+      - name: display aws-auth config map after modification
+        run: kubectl get -n kube-system configmap/aws-auth -o yaml
+
+      # - name: Apply Updated aws-auth ConfigMap
+      #   run: kubectl apply -f aws-auth.yaml
+
       - name: Update Kubernetes Deployment Image Tag
         run: |
           sed -i "s|image:.*|image: ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}|" ./k8s/deployment.yaml
@@ -149,7 +164,6 @@ jobs:
         run: |
           pip3 install boto3
           pip3 install requests
-          pip3 install yaml
           pip3 install json
           pip3 install os
           pip3 install python-dotenv
