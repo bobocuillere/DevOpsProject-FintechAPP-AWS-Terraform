@@ -158,7 +158,7 @@ jobs:
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f ./k8s/
-
+          sleep 15
       - name: Check Pods Status
         run: kubectl get pods
       - name: Get Ingress Address
@@ -199,7 +199,7 @@ jobs:
       - name: ansible playbook for the monitoring
         run: |
           cd ./ansible
-          ansible-playbook playbook.yml
+          ansible-playbook -i ../terraform/fintech-monitoring.pem playbook.yml -vvvv
 
       - name: Generate Grafana API Key and Update AWS Secret
         run: |
@@ -209,7 +209,7 @@ jobs:
         run: |
           cd ./ansible
           python3 add_grafana_datasource.py
-          
+
       - name: Add Dashboard to Grafana
         run: |
           cd ./ansible
