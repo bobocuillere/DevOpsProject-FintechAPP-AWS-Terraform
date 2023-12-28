@@ -201,7 +201,7 @@ jobs:
       - name: ansible playbook for the monitoring
         run: |
           cd ./ansible
-          ansible-playbook playbook.yml -vvvv
+          ansible-playbook playbook.yml -vv
 
 
       - name: Generate Grafana API Key and Update AWS Secret
