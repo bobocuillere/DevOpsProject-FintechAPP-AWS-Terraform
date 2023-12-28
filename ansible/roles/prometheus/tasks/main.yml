@@ -1,11 +1,12 @@
 ---
 - name: Install necessary packages
+  become: true
   yum:
-    name: "{{ packages }}"
-  vars:
-    packages:
+    name:
       - wget
       - curl
+    state: present
+
 
 - name: Download Prometheus
   get_url:

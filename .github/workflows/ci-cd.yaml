@@ -22,153 +22,153 @@ jobs:
           aws-region: eu-central-1
 
   # ---- Terraform Provisioning Stage ----
-  # terraform-provisioning:
-  #   needs: preparation
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v4
-  #     - name: AWS Configure Credentials
-  #       uses: aws-actions/configure-aws-credentials@v4
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: eu-central-1
+  terraform-provisioning:
+    needs: preparation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: AWS Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
 
-  #     - name: Set up Terraform
-  #       uses: hashicorp/setup-terraform@v3
-  #     - name: Terraform Init and Apply
-  #       run: |
-  #         cd ./terraform
-  #         terraform init
-  #         terraform apply -auto-approve
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: Terraform Init and Apply
+        run: |
+          cd ./terraform
+          terraform init
+          terraform apply -auto-approve
 
-  # # ---- Build Stage ----
-  # build:
-  #   needs: terraform-provisioning
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v4
-  #     - name: AWS Configure Credentials
-  #       uses: aws-actions/configure-aws-credentials@v4
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: eu-central-1
+  # ---- Build Stage ----
+  build:
+    needs: terraform-provisioning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: AWS Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
 
-  #     - name: Build Docker Image
-  #       run: docker build -t fintech-app-repo:${{ github.sha }} ./src
-  #     - name: Save Docker Image
-  #       run: |
-  #         docker save fintech-app-repo:${{ github.sha }} > fintech-app.tar
-  #     - name: Upload Docker Image Artifact
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: docker-image
-  #         path: fintech-app.tar
+      - name: Build Docker Image
+        run: docker build -t fintech-app-repo:${{ github.sha }} ./src
+      - name: Save Docker Image
+        run: |
+          docker save fintech-app-repo:${{ github.sha }} > fintech-app.tar
+      - name: Upload Docker Image Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: fintech-app.tar
 
-  # # ---- Publish Stage ----
-  # publish:
-  #   needs: build
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: AWS Configure Credentials
-  #       uses: aws-actions/configure-aws-credentials@v4
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: eu-central-1
-  #     - name: Login to Amazon ECR
-  #       uses: aws-actions/amazon-ecr-login@v2
-  #     - uses: actions/download-artifact@v4
-  #       with:
-  #         name: docker-image
-  #         path: .
-  #     - name: Load Docker Image
-  #       run: docker load < fintech-app.tar
-  #     - uses: aws-actions/amazon-ecr-login@v2
-  #     - name: Push Docker Image to Amazon ECR
-  #       run: |
-  #         docker tag fintech-app-repo:${{ github.sha }} ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
-  #         docker push ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
+  # ---- Publish Stage ----
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: AWS Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+      - uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+          path: .
+      - name: Load Docker Image
+        run: docker load < fintech-app.tar
+      - uses: aws-actions/amazon-ecr-login@v2
+      - name: Push Docker Image to Amazon ECR
+        run: |
+          docker tag fintech-app-repo:${{ github.sha }} ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
+          docker push ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}
 
-  # # ---- Deployment Stage ----
-  # deployment:
-  #   needs: publish
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Checkout Code
-  #       uses: actions/checkout@v4
-  #     - name: AWS Configure Credentials
-  #       uses: aws-actions/configure-aws-credentials@v4
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         aws-region: eu-central-1
-  #     - name: Retrieve and Set up Kubernetes Config
-  #       run: |
-  #         cd ./terraform
-  #         terraform init
-  #         eval "$(terraform output -raw configure_kubectl)"
+  # ---- Deployment Stage ----
+  deployment:
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: AWS Configure Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-central-1
+      - name: Retrieve and Set up Kubernetes Config
+        run: |
+          cd ./terraform
+          terraform init
+          eval "$(terraform output -raw configure_kubectl)"
 
   
-  #     - name: Install eksctl
-  #       run: |
-  #         ARCH=amd64
-  #         PLATFORM=$(uname -s)_$ARCH
-  #         curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
-  #         tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp
-  #         sudo mv /tmp/eksctl /usr/local/bin
+      - name: Install eksctl
+        run: |
+          ARCH=amd64
+          PLATFORM=$(uname -s)_$ARCH
+          curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
+          tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp
+          sudo mv /tmp/eksctl /usr/local/bin
 
-  #     - name: Check and Add IAM User to EKS Cluster
-  #       env:
-  #         CLUSTER_NAME: fintech-eks-cluster # Replace with your actual cluster name
-  #         USER_ARN: ${{ secrets.USER_ARN }}
-  #       run: |
-  #         # Check if the user is already mapped to the EKS cluster
-  #         if eksctl get iamidentitymapping --cluster "$CLUSTER_NAME" --arn "$USER_ARN" | grep -q "$USER_ARN"; then
-  #           echo "User ARN $USER_ARN is already mapped to the EKS cluster"
-  #         else
-  #           # Add the user to the EKS cluster
-  #           eksctl create iamidentitymapping --cluster "$CLUSTER_NAME" --arn "$USER_ARN" --username wsl2 --group system:masters
-  #           echo "User ARN $USER_ARN added to the EKS cluster"
-  #         fi
+      - name: Check and Add IAM User to EKS Cluster
+        env:
+          CLUSTER_NAME: fintech-eks-cluster # Replace with your actual cluster name
+          USER_ARN: ${{ secrets.USER_ARN }}
+        run: |
+          # Check if the user is already mapped to the EKS cluster
+          if eksctl get iamidentitymapping --cluster "$CLUSTER_NAME" --arn "$USER_ARN" | grep -q "$USER_ARN"; then
+            echo "User ARN $USER_ARN is already mapped to the EKS cluster"
+          else
+            # Add the user to the EKS cluster
+            eksctl create iamidentitymapping --cluster "$CLUSTER_NAME" --arn "$USER_ARN" --username wsl2 --group system:masters
+            echo "User ARN $USER_ARN added to the EKS cluster"
+          fi
 
-  #     - name: display aws-auth config map after modification
-  #       run: | 
-  #         cd ./k8s/
-  #         # kubectl get -n kube-system configmap/aws-auth -o yaml
-  #         eksctl get iamidentitymapping --cluster fintech-eks-cluster
+      - name: display aws-auth config map after modification
+        run: | 
+          cd ./k8s/
+          # kubectl get -n kube-system configmap/aws-auth -o yaml
+          eksctl get iamidentitymapping --cluster fintech-eks-cluster
 
-  #     - name: run k8s script
-  #       run: |
-  #         cd ./k8s/
-  #         chmod +x ./wrapper-rds-k8s.sh
-  #         ./wrapper-rds-k8s.sh
+      - name: run k8s script
+        run: |
+          cd ./k8s/
+          chmod +x ./wrapper-rds-k8s.sh
+          ./wrapper-rds-k8s.sh
 
-  #     - name: Update Kubernetes Deployment Image Tag
-  #       run: |
-  #         sed -i "s|image:.*|image: ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}|" ./k8s/deployment.yaml
+      - name: Update Kubernetes Deployment Image Tag
+        run: |
+          sed -i "s|image:.*|image: ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}|" ./k8s/deployment.yaml
       
-  #     - name: Apply Kubernetes Ingress
-  #       run: |
-  #         kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/aws/deploy.yaml
-  #         sleep 25
-  #     - name: Apply Kubernetes Manifests
-  #       run: |
-  #         kubectl apply -f ./k8s/
-  #         sleep 20
+      - name: Apply Kubernetes Ingress
+        run: |
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/aws/deploy.yaml
+          sleep 25
+      - name: Apply Kubernetes Manifests
+        run: |
+          kubectl apply -f ./k8s/
+          sleep 20
 
-  #     - name: Check Pods Status
-  #       run: kubectl get pods -o wide
+      - name: Check Pods Status
+        run: kubectl get pods -o wide
 
-  #     - name: Get Ingress Address
-  #       run: kubectl get ingress -o wide
+      - name: Get Ingress Address
+        run: kubectl get ingress -o wide
 
   # ---- Monitoring Setup Stage ----
   monitoring-setup:
-    # needs: deployment
+    needs: deployment
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -196,20 +196,12 @@ jobs:
         run: |
           cd ./ansible
           echo -e "${{ secrets.PEM_KEY }}" > ../terraform/fintech-monitoring.pem
-          chmod 600 ../terraform/fintech-monitoring.pem
+          chmod 400 ../terraform/fintech-monitoring.pem
 
       - name: ansible playbook for the monitoring
         run: |
-          ls ./terraform
           cd ./ansible
-          service ssh status
-          eval `ssh-agent -s`
-          ssh-add   ../terraform/fintech-monitoring.pem
-          cat /etc/ssh/ssh_config
-          export ANSIBLE_HOST_KEY_CHECKING=False
-          export ANSIBLE_SSH_ARGS="-o ControlMaster=auto -o ControlPersist=60s -vvv"
           ansible-playbook playbook.yml -vvvv
-          
 
 
       - name: Generate Grafana API Key and Update AWS Secret
