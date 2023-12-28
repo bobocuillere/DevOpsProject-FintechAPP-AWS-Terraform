@@ -33,7 +33,7 @@ module "security_groups" {
   source      = "./modules/security_groups"
   vpc_id      = module.vpc.vpc_id
   common_tags = local.common_tags
-  eks_cluster_sg_id = module.cluster.eks_cluster_sg_id
+  eks_cluster_sg_id = module.eks.eks_cluster_sg_id
 }
 
 module "eks" {
