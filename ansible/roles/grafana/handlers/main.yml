@@ -4,5 +4,5 @@
 
 - name: restart grafana
   systemd:
-    name: grafana
+    name: grafana-server.service
     state: restarted
