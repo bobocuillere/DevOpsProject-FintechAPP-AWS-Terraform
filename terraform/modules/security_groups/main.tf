@@ -45,8 +45,8 @@ resource "aws_security_group" "rds_postgres_sg" {
 
   ingress {
     description = "Source EKS Node ingress"
-    from_port   = 5432
-    to_port     = 5432
+    from_port   = -1
+    to_port     = -1
     protocol    = "tcp"
     security_groups = [ aws_security_group.eks_node_sg.id ]
   }
