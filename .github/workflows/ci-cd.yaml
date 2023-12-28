@@ -208,12 +208,7 @@ jobs:
           export ANSIBLE_HOST_KEY_CHECKING=False
           export ANSIBLE_SSH_ARGS="-o ControlMaster=auto -o ControlPersist=60s -vvv"
           ansible-playbook playbook.yml -vvvv
-          # ansible-playbook playbook.yml \
-          # -i ./inventory.yml \
-          # --private-key ../terraform/fintech-monitoring.pem \
-          # --user ec2-user \
-          # -e 'ansible_ssh_common_args="-o StrictHostKeyChecking=no"' \
-          # -vvv
+        
 
 
       - name: Generate Grafana API Key and Update AWS Secret
