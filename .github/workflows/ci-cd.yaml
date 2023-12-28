@@ -201,6 +201,7 @@ jobs:
       - name: ansible playbook for the monitoring
         run: |
           cd ./ansible
+          export ANSIBLE_HOST_KEY_CHECKING=False
           ansible-playbook playbook.yml -vv
 
       - name: Generate Grafana API Key and Update AWS Secret
