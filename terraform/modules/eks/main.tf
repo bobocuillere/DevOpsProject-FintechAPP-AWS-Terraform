@@ -27,13 +27,16 @@ resource "aws_iam_role_policy_attachment" "eks_service_policy" {
   role       = aws_iam_role.eks_cluster_role.name
 }
 
+data "aws_eks_cluster" "fintech_eks" {
+  name = aws_eks_cluster.fintech_eks.name
+}
+
 resource "aws_eks_cluster" "fintech_eks" {
   name     = "fintech-eks-cluster"
   role_arn = aws_iam_role.eks_cluster_role.arn
 
   vpc_config {
     subnet_ids = var.subnet_ids
-    security_group_ids = [var.eks_sg_id]
 
   }
 
@@ -51,7 +54,7 @@ resource "aws_eks_node_group" "fintech_eks_nodes" {
   node_group_name = "fintech-eks-node-group"
   node_role_arn   = aws_iam_role.eks_node_role.arn
   subnet_ids      = var.subnet_ids
-  
+
   scaling_config {
     desired_size = var.node_group_desired_size
     max_size     = var.node_group_max_size

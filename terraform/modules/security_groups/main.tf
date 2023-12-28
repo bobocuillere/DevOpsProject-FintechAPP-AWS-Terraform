@@ -30,14 +30,6 @@ resource "aws_security_group" "monitoring_sg" {
   tags = var.common_tags
 }
 
-resource "aws_security_group" "eks_node_sg" {
-  name        = "Eks-sg"
-  description = "Security group for EKS"
-  vpc_id      = var.vpc_id
-
-  tags = var.common_tags
-}
-
 resource "aws_security_group" "rds_postgres_sg" {
   name        = "RDS-sg"
   description = "Security group for RDS"
@@ -48,7 +40,7 @@ resource "aws_security_group" "rds_postgres_sg" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    security_groups = [ aws_security_group.eks_node_sg.id ]
+    security_groups = [ var.eks_cluster_sg_id ]
   } 
   #egress rule for the same security group  
   egress {
@@ -56,7 +48,7 @@ resource "aws_security_group" "rds_postgres_sg" {
     from_port   = 5432
     to_port     = 5432
     protocol    = "tcp"
-    security_groups = [ aws_security_group.eks_node_sg.id ]
+    security_groups = [ var.eks_cluster_sg_id ]
   }
 
   tags = var.common_tags

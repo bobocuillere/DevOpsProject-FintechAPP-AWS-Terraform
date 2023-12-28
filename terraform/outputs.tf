@@ -29,3 +29,7 @@ output "grafana_instance_ip" {
 output "prometheus_instance_ip" {
   value = module.monitoring_ec2.prometheus_instance_ip
 }
+
+output "eks_cluster_sg_id" {
+  value = module.eks.eks_cluster_sg_id
+}

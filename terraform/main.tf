@@ -33,6 +33,7 @@ module "security_groups" {
   source      = "./modules/security_groups"
   vpc_id      = module.vpc.vpc_id
   common_tags = local.common_tags
+  eks_cluster_sg_id = module.cluster.eks_cluster_sg_id
 }
 
 module "eks" {
@@ -44,7 +45,6 @@ module "eks" {
   node_group_max_size       = var.node_group_max_size
   node_group_min_size       = var.node_group_min_size
   node_group_instance_types = var.node_group_instance_types
-  eks_sg_id                 = module.security_groups.eks_sg_id
 
 }
 
