@@ -41,7 +41,7 @@ jobs:
         run: |
           cd ./terraform
           terraform init
-          terraform apply -auto-approve -lock=false
+          terraform apply -auto-approve
 
   # ---- Build Stage ----
   build:
@@ -201,6 +201,8 @@ jobs:
       - name: ansible playbook for the monitoring
         run: |
           cd ./ansible
+          service ssh status
+          eval `ssh-agent -s`
           export ANSIBLE_HOST_KEY_CHECKING=False
           ansible-playbook playbook.yml -vv
 
