@@ -205,6 +205,8 @@ jobs:
           service ssh status
           eval `ssh-agent -s`
           ssh-add   ../terraform/fintech-monitoring.pem
+          cat /etc/ssh/ssh_config
+          cat ~/.ssh/config
           export ANSIBLE_HOST_KEY_CHECKING=False
           export ANSIBLE_SSH_ARGS="-o ControlMaster=auto -o ControlPersist=60s -vvv"
           ansible-playbook playbook.yml -vvvv
