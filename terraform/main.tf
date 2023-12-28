@@ -44,6 +44,8 @@ module "eks" {
   node_group_max_size       = var.node_group_max_size
   node_group_min_size       = var.node_group_min_size
   node_group_instance_types = var.node_group_instance_types
+  eks_sg_id                 = module.security_groups.eks_sg_id
+
 }
 
 module "rds" {
@@ -55,14 +57,12 @@ module "rds" {
   db_name                = var.db_name
   db_instance_identifier = var.db_instance_identifier
   subnet_ids             = module.vpc.public_subnet_ids
-  #   eks_node_group_sg_id = module.eks.eks_node_group_security_group_id
-
-  #   vpc_security_group_ids  = module.vpc.security_group_ids
-  db_multi_az       = var.db_multi_az
-  db_storage_type   = var.db_storage_type
-  db_engine         = var.db_engine
-  db_engine_version = var.db_engine_version
-  db_port           = var.db_port
+  rds_sg_id              = module.security_groups.rds_postgres_sg_id
+  db_multi_az            = var.db_multi_az
+  db_storage_type        = var.db_storage_type
+  db_engine              = var.db_engine
+  db_engine_version      = var.db_engine_version
+  db_port                = var.db_port
 
 }
 

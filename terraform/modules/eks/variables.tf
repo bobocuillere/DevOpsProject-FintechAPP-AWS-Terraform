@@ -3,6 +3,11 @@ variable "subnet_ids" {
   type        = list(string)
 }
 
+variable "eks_sg_id" {
+  description = "Security Group ID of the EKS node group"
+  type        = string
+  
+}
 variable "common_tags" {
   description = "Common tags for all resources in the module"
   type        = map(string)

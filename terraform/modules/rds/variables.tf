@@ -28,19 +28,15 @@ variable "subnet_ids" {
   type        = list(string)
 }
 
-# variable "vpc_security_group_ids" {
-#   description = "List of VPC security group IDs to associate."
-#   type        = list(string)
-# }
 variable "vpc_id" {
   description = "The VPC ID where the RDS instance is deployed"
   type        = string
 }
 
-# variable "eks_node_group_sg_id" {
-#   description = "Security Group ID of the EKS node group"
-#   type        = string
-# }
+variable "rds_sg_id" {
+  description = "Security Group ID of the EKS node group"
+  type        = string
+}
 
 
 variable "db_multi_az" {

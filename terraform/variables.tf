@@ -83,7 +83,6 @@ variable "db_port" {
   type        = number
 }
 
-# ... other variables ...
 variable "instance_type" {
   description = "EC2 instance type"
   type        = string

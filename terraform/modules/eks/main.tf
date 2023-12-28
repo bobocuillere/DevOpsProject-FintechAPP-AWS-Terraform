@@ -27,31 +27,14 @@ resource "aws_iam_role_policy_attachment" "eks_service_policy" {
   role       = aws_iam_role.eks_cluster_role.name
 }
 
-# data "aws_eks_node_group" "node_group" {
-#   cluster_name    = aws_eks_cluster.fintech_eks.name
-#   node_group_name = aws_eks_node_group.fintech_eks_nodes.node_group_name
-# #   resources {
-# #     remote_access_security_group_id = remote_access_security_group_id
-# #   }
-   
-# }
-
-# Fetch the EKS Node Group Security Group based on tags
-# data "aws_security_group" "eks_node_group_sg" {
-#   filter {
-#     name   = "tag:eks:cluster-name"
-#     values = [aws_eks_cluster.fintech_eks.name]
-#   }
-# }
-
-
-
 resource "aws_eks_cluster" "fintech_eks" {
   name     = "fintech-eks-cluster"
   role_arn = aws_iam_role.eks_cluster_role.arn
 
   vpc_config {
     subnet_ids = var.subnet_ids
+    security_group_ids = [var.eks_sg_id]
+
   }
 
   depends_on = [
