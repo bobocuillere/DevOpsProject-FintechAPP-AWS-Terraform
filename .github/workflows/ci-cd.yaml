@@ -158,11 +158,13 @@ jobs:
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f ./k8s/
-          sleep 15
+          sleep 20
+
       - name: Check Pods Status
-        run: kubectl get pods
+        run: kubectl get pods -o wide
+
       - name: Get Ingress Address
-        run: kubectl get ingress
+        run: kubectl get ingress -o wide
 
   # ---- Monitoring Setup Stage ----
   monitoring-setup:
