@@ -204,7 +204,8 @@ jobs:
           service ssh status
           eval `ssh-agent -s`
           export ANSIBLE_HOST_KEY_CHECKING=False
-          ansible-playbook playbook.yml -vv
+          export ANSIBLE_SSH_ARGS="-o ControlMaster=auto -o ControlPersist=60s -vvv"
+          ansible-playbook playbook.yml -vvvv
 
       - name: Generate Grafana API Key and Update AWS Secret
         run: |
