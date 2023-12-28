@@ -63,7 +63,7 @@ jobs:
         run: |
           docker save fintech-app-repo:${{ github.sha }} > fintech-app.tar
       - name: Upload Docker Image Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: docker-image
           path: fintech-app.tar
@@ -81,7 +81,7 @@ jobs:
           aws-region: eu-central-1
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4
         with:
           name: docker-image
           path: .
