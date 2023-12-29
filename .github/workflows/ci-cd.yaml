@@ -1,5 +1,4 @@
 name: CI/CD for Fintech APP
-
 on:
   push:
     branches:
@@ -41,7 +40,7 @@ jobs:
         run: |
           cd ./terraform
           terraform init
-          terraform destroy -auto-approve
+          terraform apply -auto-approve
 
   # ---- Build Stage ----
   build:
@@ -112,7 +111,6 @@ jobs:
           terraform init
           eval "$(terraform output -raw configure_kubectl)"
 
-  
       - name: Install eksctl
         run: |
           ARCH=amd64
@@ -135,12 +133,6 @@ jobs:
             echo "User ARN $USER_ARN added to the EKS cluster"
           fi
 
-      - name: display aws-auth config map after modification
-        run: | 
-          cd ./k8s/
-          # kubectl get -n kube-system configmap/aws-auth -o yaml
-          eksctl get iamidentitymapping --cluster fintech-eks-cluster
-
       - name: run k8s script
         run: |
           cd ./k8s/
@@ -150,7 +142,7 @@ jobs:
       - name: Update Kubernetes Deployment Image Tag
         run: |
           sed -i "s|image:.*|image: ${{ secrets.ECR_REGISTRY }}:${{ github.sha }}|" ./k8s/deployment.yaml
-      
+
       - name: Apply Kubernetes Ingress
         run: |
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/aws/deploy.yaml
@@ -158,7 +150,7 @@ jobs:
       - name: Apply Kubernetes Manifests
         run: |
           kubectl apply -f ./k8s/
-          sleep 20
+          sleep 30
 
       - name: Check Pods Status
         run: kubectl get pods -o wide
@@ -202,7 +194,6 @@ jobs:
         run: |
           cd ./ansible
           ansible-playbook playbook.yml -vv
-
 
       - name: Generate Grafana API Key and Update AWS Secret
         run: |
