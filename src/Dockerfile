@@ -21,8 +21,10 @@ EXPOSE 5000
 
 # Define environment variable
 ENV FLASK_APP=app.py
+
 # Copy the wait-for-postgres script
 COPY wait-for-postgres.sh /wait-for-postgres.sh
+RUN chmod +x /wait-for-postgres.sh
 
 # Update the CMD to use the script and Run app.py when the container launches
 CMD ["./wait-for-postgres.sh", "db", "flask", "run", "--host=0.0.0.0"]
