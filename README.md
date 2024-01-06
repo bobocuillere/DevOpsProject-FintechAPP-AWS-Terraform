@@ -2,7 +2,7 @@
 
 ## Application Description
 
-The Fintech Cloud Project presents a mock financial technology application, designed and developed by me Sophnel Merzier :) to simulate a typical fintech environment. The application features a RESTful API developed using Flask, a popular Python web framework. It provides functionalities like user registration, account management, and transaction processing, all managed through an easy-to-use web interface.
+The Financial (Fintech) Cloud Project presents a mock financial technology application, designed and developed by me Sophnel Merzier :) to simulate a typical fintech environment. The application features a RESTful API developed using Flask, a popular Python web framework. It provides functionalities like user registration, account management, and transaction processing, all managed through an easy-to-use web interface.
 
 ### Core Features
 
@@ -96,7 +96,7 @@ The project will integrate GitHub Actions for continuous integration and deliver
 
 ## Local Development and Testing
 
-For local development and testing, the Fintech Cloud Project can be run using Docker Compose, which simplifies the process of setting up and managing the application's environment.
+For local development and testing, the Fintech Cloud Project can be run using Docker Compose.
 
 ### Requirements for Local Testing
 
@@ -106,49 +106,49 @@ For local development and testing, the Fintech Cloud Project can be run using Do
 ### Setting Up the Local Environment
 
 1. **Configure Environment Variables**:
-   - Create the image
-   - Create a `.env` file in the root directory.
-   - Add necessary environment variables, for example:
+   - Create a `.env` file in the root directory of the project.
+   - Define the necessary environment variables. For example:
      ```
      SECRET_KEY=your_secret_key
-     DATABASE_URI=postgresql://username:password@localhost:5432/your_db
+     POSTGRES_DB=mydatabase
+     POSTGRES_USER=myuser
+     POSTGRES_PASSWORD=mypass
      ```
-   - Adjust the `DATABASE_URI` to point to your local or a test database.
 
-2. **Database Setup**:
-   - Ensure you have PostgreSQL installed and running on your local machine.
-   - Create a new database and user for the application:
-     ```
-     psql -U postgres
-     CREATE DATABASE your_db;
-     CREATE USER username WITH ENCRYPTED PASSWORD 'password';
-     GRANT ALL PRIVILEGES ON DATABASE your_db TO username;
-     ```
+2. **Docker Compose Setup**:
+
+   - The `docker-compose.yml` file define the services needed for the application, such as the web server and the PostgreSQL database.
+   - Make sure the PostgreSQL service environment match the value in the *.env* file.
 
 3. **Build and Run with Docker Compose**:
-   - Navigate to the root directory of the project.
-   - Run the following command to build and start the containers:
+   - In the root directory of the project, run the following command to build and start the containers:
      ```
      docker-compose up --build
      ```
-   - This will start the web application and any other services defined in your `docker-compose.yml` file.
+   - This command builds the Docker image for the web application and starts all the services defined in the `docker-compose.yml`.
 
-4. **Accessing the Application**:
-   - Once the containers are up and running, the web application should be accessible via `http://localhost:5000` or the port you've configured.
+4. **Waiting for Database Readiness**:
+   - The script (e.g., `wait-for-postgres.sh`) in the web application container goal is to wait for the PostgreSQL service to be ready before starting the Flask application.
+   - This script should attempt to connect to the PostgreSQL database and only proceed once a successful connection is established.
+
+5. **Accessing the Application**:
+   - Once the containers are up and running, the web application should be accessible at `http://localhost:5000` or the configured port.
 
 ### Testing the Application
 
-- Run any tests defined in your application to ensure functionality:
+- Ensure your application includes tests to verify functionality.
+- Run these tests to confirm that your application behaves as expected.
 
 ### Local Development Workflow
 
-- Make changes to the application code.
-- Test the changes locally using Docker Compose.
-- Once you're satisfied with the changes, commit and push to the repository.
+- Make changes to the application code as needed.
+- Test the changes locally using Docker Compose to ensure they work as expected in the containerized environment.
+- Commit and push the satisfactory changes to the repository.
 
 ### Cleanup
 
-- To stop and remove the containers, use:
+- To stop and remove the containers, along with their network, use the following command:
+
 ```
 docker-compose down
 ````

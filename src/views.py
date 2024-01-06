@@ -158,6 +158,6 @@ def add_transaction():
 
     return redirect(url_for('app.view_all_transactions'))
 
-@app.route('/analytics')
-def analytics():
-    return "Analytics Page - Under Construction"
+# @app.route('/analytics')
+# def analytics():
+#     return "Analytics Page - Under Construction"

@@ -14,7 +14,7 @@ node_group_instance_types = ["t3.medium"]
 db_instance_class      = "db.t2.micro"
 db_allocated_storage   = 20
 db_name                = "fintech"
-db_instance_identifier = "posgre-fintech"
+db_instance_identifier = "postgres-fintech"
 db_multi_az            = false
 db_storage_type        = "gp2"
 db_engine              = "postgres"
@@ -22,5 +22,5 @@ db_engine_version      = "12.17"
 db_port                = 5432
 
 ebs_volume_size = 20
-instance_type   = "t3.micro"
+instance_type   = "t2.micro"
 key_pair_name   = "fintech-monitoring"

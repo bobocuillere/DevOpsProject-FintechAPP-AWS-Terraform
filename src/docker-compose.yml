@@ -3,6 +3,8 @@
 version: '3.8'
 services:
   web:
+    env_file:
+      - ./.env
     container_name: fintech-web
     build: .
     image: fintech
@@ -13,12 +15,17 @@ services:
     environment:
       - FLASK_APP=app.py
       - FLASK_ENV=development
+      - DATABASE_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+
+
   db:
     image: postgres
+    container_name: fintech-db
     environment:
-      POSTGRES_DB: fintech-db
-      POSTGRES_USER: fintech-backend
-      POSTGRES_PASSWORD: lolll
+      POSTGRES_DB: fintech-db # Match the value in the .env file
+      POSTGRES_USER: fintech-user # Match match the value in the .env file
+      POSTGRES_PASSWORD: devtest # Match the value in the .env file
+      
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
