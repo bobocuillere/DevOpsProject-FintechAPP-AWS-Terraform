@@ -18,6 +18,8 @@ spec:
         ports:
         - containerPort: 5000
         env:
+          - name: USE_AWS_RDS
+            value: "true"  # Indicate to use AWS RDS for the wait-for-it.sh script
           - name: FLASK_ENV
             valueFrom:
               configMapKeyRef:
@@ -45,6 +47,4 @@ spec:
                 key: db_endpoint
           - name: DATABASE_URI
             value: "postgresql://$(DB_USERNAME):$(DB_PASSWORD)@$(DB_ENDPOINT)/fintech" 
-          # - name: USE_AWS_RDS
-          #   value: "true"  # Indicate to use AWS RDS for the wait-for-it.sh script
           
