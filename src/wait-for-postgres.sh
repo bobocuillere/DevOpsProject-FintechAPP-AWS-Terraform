@@ -5,19 +5,21 @@
 
 set -e
 
+host="$1"
+shift
+cmd="$@"
+
 # Environment variable to indicate if the app is using AWS RDS
 if [ "$USE_AWS_RDS" = "true" ]; then
     >&2 echo "Using AWS RDS for PostgreSQL. Skipping wait-for-postgres script."
 else
-    host="$1"
-    shift
-    cmd="$@"
-
     until PGPASSWORD="$POSTGRES_PASSWORD" psql -h "$host" -U "$POSTGRES_USER" -c '\q'; do
         >&2 echo "Postgres is unavailable - sleeping"
         sleep 1
     done
+    >&2 echo "Postgres is up - executing command"
 fi
 
->&2 echo "Postgres is up - executing command"
+# Execute the command (Flask application)
 exec $cmd
+
