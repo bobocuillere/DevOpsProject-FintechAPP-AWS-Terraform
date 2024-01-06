@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: fintech-web
-        image: bobocuillere/fintech:latest  # Replace with your Docker image path
+        image: bobocuillere/fintech:latest
         ports:
         - containerPort: 5000
         env:
@@ -45,6 +45,5 @@ spec:
                 key: db_endpoint
           - name: DATABASE_URI
             value: "postgresql://$(DB_USERNAME):$(DB_PASSWORD)@$(DB_ENDPOINT)/fintech" 
-          - name: USE_AWS_RDS
-            value: "true"  # Indicate to use AWS RDS for the wait-for-it.sh script
-
+          # - name: USE_AWS_RDS
+          #   value: "true"  # Indicate to use AWS RDS for the wait-for-it.sh script
