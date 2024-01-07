@@ -2,7 +2,7 @@ all:
   children:
     grafana:
       hosts:
-        3.121.71.178:
+        18.184.113.48:
     prometheus:
       hosts:
-        3.122.253.208:
+        18.159.206.42:
