@@ -14,7 +14,7 @@ if [ "$USE_AWS_RDS" = "true" ]; then
     >&2 echo "Using AWS RDS for PostgreSQL. Skipping wait-for-postgres.sh script."
 else
     # If we are testing the app locally with docker-compose, wait for the PostgreSQL database to become ready.
-    until PGPASSWORD="$POSTGRES_PASSWORD" psql -h "$host" -U "$POSTGRES_USER" -c '\q'; do
+    until PGPASSWORD="$POSTGRES_PASSWORD" psql -h "$host" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c '\q'; do
         >&2 echo "Postgres is unavailable - sleeping"
         sleep 1
     done
