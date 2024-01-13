@@ -40,7 +40,7 @@ jobs:
         run: |
           cd ./terraform
           terraform init
-          terraform apply -auto-approve
+          terraform apply -auto-approve 
 
   # ---- Build Stage ----
   build:
