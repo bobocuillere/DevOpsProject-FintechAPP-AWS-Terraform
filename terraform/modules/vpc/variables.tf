@@ -8,6 +8,12 @@ variable "public_subnet_cidrs" {
   type        = map(string)
 }
 
+
+variable "private_subnet_cidrs" {
+  description = "CIDR blocks for the private subnets, keyed by AZ"
+  type        = map(string)
+}
+
 variable "availability_zones" {
   description = "List of Availability Zones"
   type        = list(string)

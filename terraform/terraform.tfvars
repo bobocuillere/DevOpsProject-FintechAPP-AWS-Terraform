@@ -4,6 +4,11 @@ public_subnet_cidrs = {
   "eu-central-1a" = "10.0.1.0/24"
   "eu-central-1b" = "10.0.2.0/24"
 }
+
+private_subnet_cidrs = {
+  "eu-central-1a" = "10.0.10.0/24"
+  "eu-central-1b" = "10.0.11.0/24"
+}
 availability_zones = ["eu-central-1a", "eu-central-1b"]
 
 node_group_desired_size   = 3

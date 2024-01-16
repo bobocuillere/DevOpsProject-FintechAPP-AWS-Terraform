@@ -12,6 +12,7 @@ module "vpc" {
   source              = "./modules/vpc"
   vpc_cidr            = var.vpc_cidr
   public_subnet_cidrs = var.public_subnet_cidrs
+  private_subnet_cidrs = var.private_subnet_cidrs
   availability_zones  = var.availability_zones
   common_tags         = local.common_tags
 }
@@ -56,7 +57,7 @@ module "rds" {
   db_allocated_storage   = var.db_allocated_storage
   db_name                = var.db_name
   db_instance_identifier = var.db_instance_identifier
-  subnet_ids             = module.vpc.public_subnet_ids
+  subnet_ids             = module.vpc.private_subnet_ids
   rds_sg_id              = module.security_groups.rds_postgres_sg_id
   db_multi_az            = var.db_multi_az
   db_storage_type        = var.db_storage_type
