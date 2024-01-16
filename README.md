@@ -2,7 +2,7 @@
 
 ## Application Description
 
-The Financial (Fintech) Cloud Project presents a mock financial technology application, designed and developed by me Sophnel Merzier :) to simulate a typical fintech environment. The application features a RESTful API developed using Flask, a popular Python web framework. It provides functionalities like user registration, account management, and transaction processing, all managed through an easy-to-use web interface.
+The Financial (Fintech) Cloud Project presents a mock financial technology application. The application features a RESTful API developed using Flask, a popular Python web framework. It provides functionalities like user registration, account management, and transaction processing, all managed through an easy-to-use web interface.
 
 ### Core Features
 
@@ -20,23 +20,17 @@ This project encapsulates the full software development lifecycle, starting with
 
 3. **Cloud Deployment on AWS**: Transitioning to AWS, the project employs services like EKS for Kubernetes orchestration and RDS for database management, AWS secrets, ECS and other services.
 
-4. **Infrastructure as Code (IaC)**: Utilizing Terraform and Ansible, the project highlights the advantages of IaC in automating and replicating infrastructure setups efficiently.
+4. **Infrastructure as Code (IaC) and Ansible** :  Utilizing Terraform and Ansible, the project highlights the advantages of IaC in automating and replicating infrastructure setups efficiently.
 
-## Scope and Learning Objectives
+5. **CI/CD**: Implement GitHub CI/CD pipelines to automate testing and deployment, ensuring faster delivery .
 
-- **Flask-based API Development**: Learn to build a RESTful API with Flask, managing routing, requests, and CRUD operations.
-- **Containerization and Docker**: Understand how to package and run the application in Docker containers for consistency and portability.
-- **AWS Deployment**: Explore deploying a Flask application on AWS using EKS and RDS, understanding the nuances of cloud services and Kubernetes.
-- **IaC with Terraform and Ansible**: Experience firsthand the power of Terraform in managing cloud resources, emphasizing the importance of IaC in DevOps.
-- **CI/CD Integration**: Implement CI/CD pipelines to automate testing and deployment, ensuring faster delivery and high-quality code.
+### Architecture Overview
 
-### Architecture
-
-- **Frontend**: A Flask-based web application.
-- **Backend**: Managed by AWS RDS (PostgreSQL).
-- **Infrastructure**: Managed using Terraform, with AWS EKS for orchestration and EC2 instances.
-- **CI/CD**: Planned integration with GitHub Actions for automated workflows.
-- **Monitoring**: Planned setup with Prometheus and Grafana.
+- **Frontend**: Flask-based web application.
+- **Backend**: AWS services such as EKS or AWS RDS (PostgreSQL).
+- **Infrastructure**: Managed using Terraform and Ansible.
+- **CI/CD**: GitHub Actions for automated workflows.
+- **Monitoring**: Prometheus and Grafana.
 
 ## Prerequisites
 
@@ -47,9 +41,10 @@ This project encapsulates the full software development lifecycle, starting with
 - AWS CLI (configured)
 - Pyenv (optional, for Python version management)
 
-## Running the Application
+## Deploying the Infrastructure
 
 1. **Infrastructure Setup with Terraform**:
+In the folder *terraform*
    - Ensure a Terraform backend is set up with an S3 bucket and DynamoDB table.
    - Modify `backend.tf` to match your AWS configuration.
    - Minimum 3 nodes in the `terraform.tfvars` file to have enough CPU/RAM to run the mock app.
@@ -61,11 +56,10 @@ This project encapsulates the full software development lifecycle, starting with
      ```
 
 2. **Kubernetes Configuration**:
-   - Use the `terraform output` command to get the `update-kubeconfig` command.
+In the folder *k8s*
+   - Use the `terraform output` *configure_kubectl* to update your context.
    - Run the provided command to configure kubectl for your EKS cluster.
-
-3. **Deploying to Kubernetes**:
-   - First, Give the rights to execute the `wrapper-rds-k8s.sh` script in the `k8s`folder
+   - Give the rights to execute the `wrapper-rds-k8s.sh` script in the `k8s`folder
      ````
      chmod +x ./wrapper-rds-k8s.sh`
      ````
@@ -84,15 +78,19 @@ This project encapsulates the full software development lifecycle, starting with
      kubectl apply -f k8s/
      ```
 
-4. **Accessing the Application**:
+3. **Accessing the Application**:
    - Use `kubectl get ingress` and wait for the address to appear to access the application.
 
-5. **Monitoring Setup** (Planned):
-   - Deploy Prometheus and Grafana using provided Ansible playbooks.
+4. **Monitoring Setup**:
+   - Go in the `ansible` folder.
+   - run the script `python3 update_inventory.py` to update the inventory.
+   - launch `ansible-playbook playbook.yml -vv` to configure Prometheus and Grafana
+   - run `python3 generate_grafana_api_key.py` to generate a grafana api key and store it on AWS Secrets Manager
+   - run `python3 add_grafana_dashboard.py` to create a basic dashboard on Grafana.
 
-## CI/CD Workflow (Planned)
-
-The project will integrate GitHub Actions for continuous integration and delivery, automating the deployment process upon every code commit to the repository. This will streamline the workflow, ensuring code consistency and deployment efficiency.
+To access Prometheus you will use in your browser `<PROMETHEUS_PUBLIC_IP>:9090`, and for Grafana you will paste in your browser  `<GRAFANA_PUBLIC_IP>:3000` .
+These information can be found in the `inventory.yml` file .
+Default user and password for Grafana is `admin` .
 
 ## Local Development and Testing
 
@@ -106,7 +104,7 @@ For local development and testing, the Fintech Cloud Project can be run using Do
 ### Setting Up the Local Environment
 
 1. **Configure Environment Variables**:
-   - Create a `.env` file in the root directory of the project.
+   - Create a `.env` file in the `src` directory.
    - Define the necessary environment variables. For example:
      ```
      SECRET_KEY=your_secret_key
@@ -134,17 +132,6 @@ For local development and testing, the Fintech Cloud Project can be run using Do
 5. **Accessing the Application**:
    - Once the containers are up and running, the web application should be accessible at `http://localhost:5000` or the configured port.
 
-### Testing the Application
-
-- Ensure your application includes tests to verify functionality.
-- Run these tests to confirm that your application behaves as expected.
-
-### Local Development Workflow
-
-- Make changes to the application code as needed.
-- Test the changes locally using Docker Compose to ensure they work as expected in the containerized environment.
-- Commit and push the satisfactory changes to the repository.
-
 ### Cleanup
 
 - To stop and remove the containers, along with their network, use the following command:
@@ -152,14 +139,3 @@ For local development and testing, the Fintech Cloud Project can be run using Do
 ```
 docker-compose down
 ````
-
-## Repository Structure
-
-- `ansible/`: Ansible playbooks and roles for Prometheus and Grafana.
-- `k8s/`: Kubernetes manifests including ConfigMaps, Secrets, and Ingress.
-- `src/`: Source code of the Flask application.
-- `terraform/`: Terraform modules for AWS infrastructure.
-
-## Contributing
-
-Contributions are welcome. Please adhere to best practices for coding, testing, and documentation.
