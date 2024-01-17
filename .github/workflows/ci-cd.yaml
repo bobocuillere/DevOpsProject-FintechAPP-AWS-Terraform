@@ -2,8 +2,7 @@ name: CI/CD for Fintech APP
 on:
   push:
     branches:
-      # - main 
-      # UNCOMMENT THE  LINE ABOVE TO ENABLE THE CI/CD PIPELINE FOR THE MAIN BRANCH
+      - main
 
 jobs:
   # ---- Preparation Stage ----
@@ -41,7 +40,7 @@ jobs:
         run: |
           cd ./terraform
           terraform init
-          terraform apply -auto-approve 
+          terraform apply -auto-approve
 
   # ---- Build Stage ----
   build:
