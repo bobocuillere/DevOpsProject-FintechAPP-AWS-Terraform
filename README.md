@@ -1,4 +1,5 @@
 # Fintech DevOps Project: A Journey from Development to Deployment
+For more details, check out my blog post : [https://thelearningjourney.co/](https://thelearningjourney.co/automating-the-cloud-the-evolution-of-a-python-app-with-docker-kubernetes-and-terraform/)
 
 ## Application Description
 
