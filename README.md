@@ -2,8 +2,9 @@
 
 ## Application Description
 
-The Financial (Fintech) Cloud Project presents a mock financial technology application. The application features a RESTful API developed using Flask, a popular Python web framework. It provides functionalities like user registration, account management, and transaction processing, all managed through an easy-to-use web interface.
-
+![Fintech](https://github.com/bobocuillere/DevOpsProject-FintechAPP-AWS-Terraform/assets/45902931/9966fa5d-aa47-441f-a32d-a47596fd496c)
+The Financial (Fintech) Cloud Project presents a mock financial technology application. The application features a RESTful API developed with Python. 
+For the infrastructure, we use AWS, Terraform, Ansible, and Python.
 ### Core Features
 
 - **User Management**: Secure registration and authentication system.
