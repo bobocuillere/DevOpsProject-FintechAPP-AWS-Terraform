@@ -11,9 +11,9 @@ private_subnet_cidrs = {
 }
 availability_zones = ["eu-central-1a", "eu-central-1b"]
 
-node_group_desired_size   = 3
-node_group_min_size       = 3
-node_group_max_size       = 3
+node_group_desired_size   = 1
+node_group_min_size       = 1
+node_group_max_size       = 1
 node_group_instance_types = ["t3.medium"]
 
 db_instance_class      = "db.t2.micro"
