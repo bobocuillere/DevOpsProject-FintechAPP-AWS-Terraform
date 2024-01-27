@@ -1,11 +1,13 @@
 # Fintech DevOps Project: A Journey from Development to Deployment
+![Architecture](Slide1.PNG)
 For more details, check out my blog post : [https://thelearningjourney.co/](https://thelearningjourney.co/automating-the-cloud-the-evolution-of-a-python-app-with-docker-kubernetes-and-terraform/)
 
 ## Application Description
 
 ![Fintech](https://github.com/bobocuillere/DevOpsProject-FintechAPP-AWS-Terraform/assets/45902931/9966fa5d-aa47-441f-a32d-a47596fd496c)
-The Financial (Fintech) Cloud Project presents a mock financial technology application. The application features a RESTful API developed with Python. 
+The Financial (Fintech) Cloud Project presents a mock financial technology application. The application features a RESTful API developed with Python.
 For the infrastructure, we use AWS, Terraform, Ansible, and Python.
+
 ### Core Features
 
 - **User Management**: Secure registration and authentication system.
@@ -17,7 +19,7 @@ For the infrastructure, we use AWS, Terraform, Ansible, and Python.
 This project encapsulates the full software development lifecycle, starting with a basic mock application and culminating in a cloud-hosted solution.
 
 1. **Local Development**: Initially, the application is developed locally, focusing on Flask for backend operations and integrating database management for user and transaction data.
-   
+
 2. **Dockerization**: The application is then containerized using Docker, demonstrating how Docker aids in maintaining consistency across various environments and simplifies the deployment process.
 
 3. **Cloud Deployment on AWS**: Transitioning to AWS, the project employs services like EKS for Kubernetes orchestration and RDS for database management, AWS secrets, ECS and other services.
@@ -51,6 +53,7 @@ In the folder *terraform*
    - Modify `backend.tf` to match your AWS configuration.
    - Minimum 3 nodes in the `terraform.tfvars` file to have enough CPU/RAM to run the mock app.
    - Run the following commands in the `terraform` directory:
+
      ```
      cd terraform
      terraform init
@@ -62,20 +65,27 @@ In the folder *k8s*
    - Use the `terraform output` *configure_kubectl* to update your context.
    - Run the provided command to configure kubectl for your EKS cluster.
    - Give the rights to execute the `wrapper-rds-k8s.sh` script in the `k8s`folder
+
      ````
      chmod +x ./wrapper-rds-k8s.sh`
      ````
+
    - Run the script
+
      ````
       sudo ./wrapper-rds-k8s.sh
      ````
-   - 
+
+   -
      Apply for the Ingress controller:
+
      ```
      kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.2/deploy/static/provider/aws/deploy.yaml
      ```
+
    - Wait for the Ingress controller to be fully deployed.
    - Apply the Kubernetes manifests from the `k8s` directory:
+
      ```
      kubectl apply -f k8s/
      ```
@@ -108,6 +118,7 @@ For local development and testing, the Fintech Cloud Project can be run using Do
 1. **Configure Environment Variables**:
    - Create a `.env` file in the `src` directory.
    - Define the necessary environment variables. For example:
+
      ```
      SECRET_KEY=your_secret_key
      POSTGRES_DB=mydatabase
@@ -122,9 +133,11 @@ For local development and testing, the Fintech Cloud Project can be run using Do
 
 3. **Build and Run with Docker Compose**:
    - In the root directory of the project, run the following command to build and start the containers:
+
      ```
      docker-compose up --build
      ```
+
    - This command builds the Docker image for the web application and starts all the services defined in the `docker-compose.yml`.
 
 4. **Waiting for Database Readiness**:
