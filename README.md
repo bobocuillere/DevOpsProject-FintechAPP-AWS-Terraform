@@ -51,7 +51,7 @@ This project encapsulates the full software development lifecycle, starting with
 In the folder *terraform*
    - Ensure a Terraform backend is set up with an S3 bucket and DynamoDB table.
    - Modify `backend.tf` to match your AWS configuration.
-   - Minimum 3 nodes in the `terraform.tfvars` file to have enough CPU/RAM to run the mock app.
+   - Could use 2 nodes in the `terraform.tfvars` file to have High Availability (HA) to run the mock app.
    - Run the following commands in the `terraform` directory:
 
      ```
