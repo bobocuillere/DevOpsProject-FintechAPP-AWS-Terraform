@@ -5,7 +5,7 @@ metadata:
   namespace: default
   annotations:
     # Apply the whitelist annotation only to this Ingress resource
-    nginx.ingress.kubernetes.io/whitelist-source-range: "3.67.69.144/32"  # Prometheus-Server-IP dynamically populated by the wrapper k8s script
+    nginx.ingress.kubernetes.io/whitelist-source-range: "3.69.234.155/32"  # Prometheus-Server-IP dynamically populated by the wrapper k8s script
 spec:
   ingressClassName: nginx
   rules:

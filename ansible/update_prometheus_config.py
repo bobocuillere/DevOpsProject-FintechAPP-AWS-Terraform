@@ -59,7 +59,7 @@ def update_prometheus_config(secrets, nlb_dns_name):
             updated_content.append(f'  - targets:\n    - {nlb_dns_name}\n')
             skip_next_line = True  # Skip the next line, which is the old target
         elif 'api_server:' in line:
-            updated_content.append(f'    api_server: "{secrets["api_server"]}"\n')
+            updated_content.append(f'      api_server: "{secrets["api_server"]}"\n')
         else:
             updated_content.append(line)
 

@@ -14,12 +14,12 @@ scrape_configs:
   follow_redirects: true
   static_configs:
   - targets:
-    - a9fa1975bafb248e089a24d0790543a4-a733f313c8b2b326.elb.eu-central-1.amazonaws.com
+    - a02b9b2d737d54516be9998b20ac64a5-2ce24c39d5eaf1d1.elb.eu-central-1.amazonaws.com
 
 - job_name: 'node-exporter'
   kubernetes_sd_configs:
     - role: endpoints
-      api_server: "https://B9A15F0D6A6EF7A1308989B1094E58A5.gr7.eu-central-1.eks.amazonaws.com"
+      api_server: "https://917E6145DE52A5640BF472E1F52BDE63.gr7.eu-central-1.eks.amazonaws.com"
       tls_config:
         ca_file: '/opt/prometheus-2.26.0.linux-amd64/k8s-ca.crt'
       bearer_token_file: '/opt/prometheus-2.26.0.linux-amd64/bearer.token'
