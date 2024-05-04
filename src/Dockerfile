@@ -4,6 +4,7 @@ FROM python:3.10.2-slim
 # Install postgres client to use the wait-for-postgres script
 RUN apt-get update \
     && apt-get install -y postgresql-client \
+    &&  apt-get install -y curl \
     && rm -rf /var/lib/apt/lists/
 
 # Set the working directory in the container to /app

@@ -1,0 +1,39 @@
+groups:
+- name: flask_app_transaction_alerts
+  rules:
+  - alert: HighTransactionFailureRate
+    expr: increase(transactions_failed_total[1m]) > 1
+    for: 5s
+    labels:
+      severity: critical
+    annotations:
+      summary: "High transaction failure rate detected"
+      description: "More than 1 transactions have failed in the last 1 minutes."
+
+  - alert: HighRateOfUnauthorizedErrors
+    expr: increase(http_401_errors_total[1m]) > 1
+    for: 5s
+    labels:
+      severity: warning
+    annotations:
+      summary: "High rate of 401 Unauthorized errors detected"
+      description: "More than 1 requests resulted in a 401 Unauthorized error every minutes, indicating potential issues with authentication or authorization."
+
+  - alert: SpikeInHomePageVisits
+    expr: increase(home_visits_total[5m]) > 5
+    for: 5s
+    labels:
+      severity: warning
+    annotations:
+      summary: "Unexpected spike in home page visits"
+      description: "The number of visits to the home page has increased unexpectedly, with more than 5 visits in the last 5s."
+
+  - alert: HighCPUUsage
+    expr: rate(process_cpu_seconds_total[5m]) > 0.5  # Alert if CPU usage exceeds 50% over 5 minutes
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage detected"
+      description: "CPU usage has exceeded 50% over the last 5 minutes, potentially impacting application performance."
+

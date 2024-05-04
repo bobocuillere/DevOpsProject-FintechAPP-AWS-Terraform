@@ -31,6 +31,20 @@ data "aws_eks_cluster" "fintech_eks" {
   name = aws_eks_cluster.fintech_eks.name
 }
 
+resource "aws_secretsmanager_secret" "kubernetes_prometheus" {
+  name = "kubernetes-prometheus"
+  recovery_window_in_days = 0
+}
+
+resource "aws_secretsmanager_secret_version" "kubernetes_prometheus" {
+  secret_id     = aws_secretsmanager_secret.kubernetes_prometheus.name # This value have to be similar to the one in the add_kubernetes_secrets.py script on the ansible folder
+  secret_string = jsonencode({
+    api_server    = "PLACEHOLDER" # These will be replaced by the actual value in the add_kubernetes_secrets.py script on the ansible folder
+    ca_cert       = "PLACEHOLDER"
+    bearer_token  = "PLACEHOLDER"
+  })
+}
+
 resource "aws_eks_cluster" "fintech_eks" {
   name     = "fintech-eks-cluster"
   role_arn = aws_iam_role.eks_cluster_role.arn

@@ -1,14 +1,38 @@
-from flask import Blueprint, request, jsonify, render_template, redirect, url_for
+from flask import Blueprint, request, jsonify, render_template, redirect, url_for, after_this_request
 from flask_login import login_user, logout_user, current_user, login_required
 from extensions import db
 from models import User, Account, Transaction 
 from werkzeug.security import check_password_hash
+from prometheus_client import generate_latest, Counter, REGISTRY
+from flask import Response
 
 app = Blueprint('app', __name__)
 
+# Define counters for both successful and failed transactions
+transactions_success_total = Counter('transactions_success_total', 'Total number of successful transactions')
+transactions_failed_total = Counter('transactions_failed_total', 'Total number of failed transactions')
+
+# counter to track the number of visits to the homepage
+home_visits_counter = Counter('home_visits', 'Number of visits to the home page') 
+
+
 @app.route('/')
 def home():
+    home_visits_counter.inc()  # Increment the counter
     return render_template('home.html')
+
+@app.route('/metrics')
+def metrics():
+    return Response(generate_latest(REGISTRY), mimetype="text/plain")
+
+# Define a Prometheus counter for 401 errors
+http_401_errors_total = Counter('http_401_errors_total', 'Total number of HTTP 401 Unauthorized errors')
+
+@app.after_request
+def count_401_errors(response):
+    if response.status_code == 401:
+        http_401_errors_total.inc()  # Increment the counter for 401 errors
+    return response
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -135,21 +159,31 @@ def add_transaction_form():
 def add_transaction():
     account_id = request.form.get('account_id')
     transaction_type = request.form.get('type')
-    amount = float(request.form.get('amount'))  # Convert amount to float
+    amount = request.form.get('amount')
 
     if not all([account_id, transaction_type, amount]):
+        transactions_failed_total.inc()  # Increment failed transactions counter here
         return jsonify({'message': 'Missing data'}), 400
 
+    amount = float(amount)  # Convert amount to float after validation
     account = Account.query.get(account_id)
 
-    # Update account balance
+    if not account or account.user_id != current_user.id:
+        transactions_failed_total.inc()  # Increment failed transactions counter here
+        return "Account not found", 404
+
+    # Handle transaction logic
     if transaction_type == 'deposit':
         account.balance += amount
     elif transaction_type == 'withdrawal':
         if account.balance >= amount:
             account.balance -= amount
         else:
+            transactions_failed_total.inc()  # Increment failed transactions counter here
             return jsonify({'message': 'Insufficient funds'}), 400
+
+    # Transaction is successful if none of the above conditions are met
+    transactions_success_total.inc()  # Increment success transactions counter here
 
     # Create and commit transaction
     new_transaction = Transaction(account_id=account_id, type=transaction_type, amount=amount)
@@ -157,6 +191,43 @@ def add_transaction():
     db.session.commit()
 
     return redirect(url_for('app.view_all_transactions'))
+
+# @app.route('/add_transaction', methods=['POST'])
+# @login_required
+# def add_transaction():
+#     account_id = request.form.get('account_id')
+#     transaction_type = request.form.get('type')
+#     amount = float(request.form.get('amount'))  # Convert amount to float
+
+#     if not all([account_id, transaction_type, amount]):
+#         return jsonify({'message': 'Missing data'}), 400
+
+#     account = Account.query.get(account_id)
+
+#     # Update account balance
+#     if transaction_type == 'deposit':
+#         account.balance += amount
+#     elif transaction_type == 'withdrawal':
+#         if account.balance >= amount:
+#             account.balance -= amount
+#         else:
+#             return jsonify({'message': 'Insufficient funds'}), 400
+
+#     @after_this_request
+#     def count_transaction(response):
+#         # Increment the appropriate counter based on the response status code
+#         if response.status_code == 302:
+#             transactions_success_total.inc()
+#         else:
+#             transactions_failed_total.inc()
+#         return response
+    
+#     # Create and commit transaction
+#     new_transaction = Transaction(account_id=account_id, type=transaction_type, amount=amount)
+#     db.session.add(new_transaction)
+#     db.session.commit()
+
+#     return redirect(url_for('app.view_all_transactions'))
 
 # @app.route('/analytics')
 # def analytics():

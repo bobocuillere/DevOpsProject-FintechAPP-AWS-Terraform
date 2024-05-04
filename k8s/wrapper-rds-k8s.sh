@@ -2,8 +2,12 @@
 
 cd ../terraform
 
+# Refresh the Terraform state file
+terraform refresh
+
 SECRET_ARN=$(terraform output -raw rds_secret_arn)
 REGION=$(terraform output -raw aws_region)
+PROMETHEUS_IP=$(terraform output -raw prometheus_instance_ip)
 
 # Fetch secrets
 REGION=$(terraform output -raw aws_region)
@@ -37,4 +41,5 @@ data:
   db_name: $DB_NAME
 EOF
 
-# Apply the Kubernetes manifests
+# Replace the placeholder in the template with the actual Prometheus IP
+sed "s/<Prometheus-Server-IP>/${PROMETHEUS_IP}/g" metrics_ingress.yaml.tpl > metrics_ingress_final.yaml

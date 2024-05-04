@@ -33,11 +33,15 @@
     - reload systemd
     - restart prometheus
 
-
 - name: Reload systemd
   become: true
   systemd:
     daemon_reload: yes
+
+- name: Render alert rules template
+  template:
+    src: "alert-rules.yml.j2"
+    dest: /opt/prometheus-2.26.0.linux-amd64/alert-rules.yml 
 
 - name: Ensure Prometheus service is running
   become: true

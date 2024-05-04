@@ -9,12 +9,12 @@ locals {
 }
 
 module "vpc" {
-  source              = "./modules/vpc"
-  vpc_cidr            = var.vpc_cidr
-  public_subnet_cidrs = var.public_subnet_cidrs
+  source               = "./modules/vpc"
+  vpc_cidr             = var.vpc_cidr
+  public_subnet_cidrs  = var.public_subnet_cidrs
   private_subnet_cidrs = var.private_subnet_cidrs
-  availability_zones  = var.availability_zones
-  common_tags         = local.common_tags
+  availability_zones   = var.availability_zones
+  common_tags          = local.common_tags
 }
 
 resource "aws_ecr_repository" "fintech_ecr_repo" {

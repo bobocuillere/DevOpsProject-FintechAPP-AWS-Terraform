@@ -1,15 +1,19 @@
-import json
 import boto3
 import yaml
 
 # Load vars.yml
 with open('vars.yml') as file:
     vars_data = yaml.safe_load(file)
-aws_region = vars_data['aws_region'] 
+aws_region = vars_data['aws_region']
+
+# Define variables
+grafana_server_name = 'Grafana-Server'
+prometheus_server_name = 'Prometheus-Server'
+grafana_port = 3000
+prometheus_port = 9090
 
 def get_instance_ip(instance_name):
     ec2 = boto3.client('ec2', region_name=aws_region)
-
     response = ec2.describe_instances(
         Filters=[
             {'Name': 'tag:Name', 'Values': [instance_name]},
@@ -26,8 +30,8 @@ def get_instance_ip(instance_name):
     return None
 
 def update_inventory():
-    grafana_ip = get_instance_ip('Grafana-Server')
-    prometheus_ip = get_instance_ip('Prometheus-Server')
+    grafana_ip = get_instance_ip(grafana_server_name)
+    prometheus_ip = get_instance_ip(prometheus_server_name)
 
     inventory_content = f'''
 all:
@@ -55,17 +59,16 @@ all:
 
 def update_env_file(grafana_ip, prometheus_ip):
     env_content = f'''
-export GRAFANA_URL='http://{grafana_ip}:3000'
+export GRAFANA_URL='http://{grafana_ip}:{grafana_port}'
 export GRAFANA_ADMIN_USER='admin'
 export GRAFANA_ADMIN_PASSWORD='admin'
-export PROMETHEUS_URL='http://{prometheus_ip}:9090'
+export PROMETHEUS_URL='http://{prometheus_ip}:{prometheus_port}'
 '''
     with open('.env', 'w') as file:
         file.write(env_content.strip())
 
 if __name__ == '__main__':
     update_inventory()
-    grafana_ip = get_instance_ip('Grafana-Server')
-    prometheus_ip = get_instance_ip('Prometheus-Server')
+    grafana_ip = get_instance_ip(grafana_server_name)
+    prometheus_ip = get_instance_ip(prometheus_server_name)
     update_env_file(grafana_ip, prometheus_ip)
-

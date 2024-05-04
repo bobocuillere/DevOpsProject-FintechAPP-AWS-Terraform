@@ -11,6 +11,11 @@ spec:
     metadata:
       labels:
         app: fintech-web
+      annotations:
+        prometheus.io/scrape-kube: 'true'
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: '/metrics'
+        prometheus.io/port: '5000'
     spec:
       containers:
       - name: fintech-web
