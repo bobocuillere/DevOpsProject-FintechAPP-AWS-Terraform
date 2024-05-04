@@ -67,7 +67,7 @@ resource "aws_db_instance" "default" {
 
 resource "aws_db_parameter_group" "default" {
   name   = "param-group-${var.db_name}"
-  family = "postgres12"
+  family = "postgres16"
 
 }
 
