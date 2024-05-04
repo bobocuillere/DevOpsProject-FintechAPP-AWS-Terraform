@@ -95,12 +95,15 @@ In the folder *k8s*
 
 4. **Monitoring Setup**:
    - Go in the `ansible` folder.
+   - run `python3 manage_kubernetes_secrets.py` and `python3 add_kubernetes_secrets.py` that fetches and updates Kubernetes API access information in AWS Secrets Manager.
    - run the script `python3 update_inventory.py` to update the inventory.
    - launch `ansible-playbook playbook.yml -vv` to configure Prometheus and Grafana
+   - run `python3 retrieve_kubernetes_secrets.py` that retrieves Kubernetes API access secrets from AWS Secrets Manager and updates Prometheus server configuration.
+   - run `python3 update_prometheus_config.py` that dynamically updates the `prometheus.yml.j2` template with the Kubernetes API server endpoint and NLB DNS name.
    - run `python3 generate_grafana_api_key.py` to generate a grafana api key and store it on AWS Secrets Manager
    - run `python3 add_grafana_dashboard.py` to create a basic dashboard on Grafana.
 
-To access Prometheus you will use in your browser `<PROMETHEUS_PUBLIC_IP>:9090`, and for Grafana you will paste in your browser  `<GRAFANA_PUBLIC_IP>:3000` .
+To access Prometheus you will use in your browser `<PROMETHEUS_PUBLIC_IP>:9090`, and for Grafana you will paste in your browser `<GRAFANA_PUBLIC_IP>:3000` .
 These information can be found in the `inventory.yml` file .
 Default user and password for Grafana is `admin` .
 
