@@ -28,7 +28,7 @@ This project encapsulates the full software development lifecycle, starting with
 
 5. **CI/CD**: Implement GitHub CI/CD pipelines to automate testing and deployment, ensuring faster delivery .
 
-### Architecture Overview
+## Architecture Overview
 
 - **Frontend**: Flask-based web application.
 - **Backend**: AWS services such as EKS or AWS RDS (PostgreSQL).
